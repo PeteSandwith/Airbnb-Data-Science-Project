@@ -7,10 +7,10 @@ dataset = pd.read_csv('airbnb-property-listings/tabular_data/listing.csv')
 
 # Function that sets missing values in the 'beds', 'guests' 'bathrooms' and 'bedrooms' columns to 1 and returns the updated dataframe.
 def set_default_feature_values(dataframe):
-    dataframe['beds'] = dataframe['beds'].where(~dataframe['beds'].isna(), 1)
-    dataframe['guests'] = dataframe['guests'].where(~dataframe['guests'].isna(), 1)
-    dataframe['bathrooms'] = dataframe['bathrooms'].where(~dataframe['bathrooms'].isna(), 1)
-    dataframe['bedrooms'] = dataframe['bedrooms'].where(~dataframe['bedrooms'].isna(), 1)
+    dataframe['beds'].where(~dataframe['beds'].isna(), 1, inplace = True)
+    dataframe['guests'].where(~dataframe['guests'].isna(), 1, inplace = True)
+    dataframe['bathrooms'].where(~dataframe['bathrooms'].isna(), 1, inplace = True)
+    dataframe['bedrooms'].where(~dataframe['bedrooms'].isna(), 1, inplace = True)
     return dataframe
 
 # Function that removes any rows that have missing values in the ratings columns
