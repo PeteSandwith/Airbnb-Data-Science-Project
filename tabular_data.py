@@ -13,6 +13,7 @@ def set_default_feature_values(dataframe):
     dataframe['guests'].where(~dataframe['guests'].isna(), 1, inplace = True)
     dataframe['bathrooms'].where(~dataframe['bathrooms'].isna(), 1, inplace = True)
     dataframe['bedrooms'].where(~dataframe['bedrooms'].isna(), 1, inplace = True)
+    dataframe['Description'].where(~dataframe['Description'].isna(), '["No description given"]', inplace = True)
     return dataframe
 
 # Function that removes any rows that have missing values in the ratings columns
@@ -20,17 +21,12 @@ def remove_rows_with_missing_ratings(dataframe):
     dataframe.dropna(axis = 0, how = 'any', subset = ['Cleanliness_rating', 'Accuracy_rating', 'Communication_rating', 'Location_rating', 'Check-in_rating', 'Value_rating'], inplace = True)
     return dataframe
 
-#def combine_description_strings(dataframe):
 
-
-
-dataset = set_default_feature_values(dataset)
-dataset = remove_rows_with_missing_ratings(dataset)
-
-
+# Function that parses the string-valued entries of the description column, which are strings whose contents are valid lists, and converts them to orderly strings with no erroneous extra spaces.
 def parses_description_strings(string):
     #Uses ast package to parse the string description into a list
     description_as_list = ast.literal_eval(string)
+    description_as_list.pop(0)
     #Removes empty quotes from the list
     number_empty_quotes = description_as_list.count('')
     for index in range(0,number_empty_quotes):
@@ -38,6 +34,17 @@ def parses_description_strings(string):
     #Turns the list into a single string containing the description
     cleaned_description = ' '.join(description_as_list)
     return cleaned_description
+
+
+
+
+
+dataset = set_default_feature_values(dataset)
+dataset = remove_rows_with_missing_ratings(dataset)
+#dataset = combine_description_strings(dataset)
+#print(dataset.count())
+print(dataset.head(20))
+
 
 
 
