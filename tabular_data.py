@@ -1,5 +1,7 @@
 # %%
+from this import d
 import pandas as pd
+import ast
 
 dataset = pd.read_csv('airbnb-property-listings/tabular_data/listing.csv')
 
@@ -18,10 +20,25 @@ def remove_rows_with_missing_ratings(dataframe):
     dataframe.dropna(axis = 0, how = 'any', subset = ['Cleanliness_rating', 'Accuracy_rating', 'Communication_rating', 'Location_rating', 'Check-in_rating', 'Value_rating'], inplace = True)
     return dataframe
 
+#def combine_description_strings(dataframe):
+
+
 
 dataset = set_default_feature_values(dataset)
 dataset = remove_rows_with_missing_ratings(dataset)
-print(dataset.head(20))
+
+
+def parses_description_strings(string):
+    #Uses ast package to parse the string description into a list
+    description_as_list = ast.literal_eval(string)
+    #Removes empty quotes from the list
+    number_empty_quotes = description_as_list.count('')
+    for index in range(0,number_empty_quotes):
+        description_as_list.remove('')
+    #Turns the list into a single string containing the description
+    cleaned_description = ' '.join(description_as_list)
+    return cleaned_description
+
 
 
 
