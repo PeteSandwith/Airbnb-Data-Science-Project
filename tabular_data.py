@@ -1,5 +1,6 @@
 # %%
 from this import d
+from bleach import clean
 import pandas as pd
 import ast
 
@@ -44,10 +45,10 @@ def parses_description_strings(string):
     except: 
         return string
 
-dataset = clean_tabular_data(dataset)
-print(dataset.head())
-
-
+if __name__ == "__main__":
+    dataset = pd.read_csv('airbnb-property-listings/tabular_data/listing.csv')
+    cleaned_dataset = clean_tabular_data(dataset)
+    cleaned_dataset.to_csv('airbnb-property-listings/tabular_data/cleaned_tabular_data.csv')
 
 
 
