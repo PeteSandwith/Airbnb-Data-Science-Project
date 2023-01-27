@@ -18,7 +18,6 @@ def set_default_feature_values(dataframe):
     dataframe['guests'].where(~dataframe['guests'].isna(), 1, inplace = True)
     dataframe['bathrooms'].where(~dataframe['bathrooms'].isna(), 1, inplace = True)
     dataframe['bedrooms'].where(~dataframe['bedrooms'].isna(), 1, inplace = True)
-    dataframe['Description'].where(~dataframe['Description'].isna(), '["About this space", "No", "description given"]', inplace = True)
     return dataframe
 
 # Function that removes any rows that have missing values in the ratings columns
@@ -27,8 +26,13 @@ def remove_rows_with_missing_ratings(dataframe):
     return dataframe
 
 def combine_description_strings(dataframe):
+    #Removes any row without a description
+    dataframe.dropna(axis = 0, how = 'any', subset = ['Description'], inplace = True)
+    #Applies string parsing function to every entry in the Description column
     dataframe['Description'] = dataframe['Description'].apply(parses_description_strings)
     return dataframe
+
+
 # Function that parses the string-valued entries of the description column, which are strings whose contents are valid lists, and converts them to orderly strings with no erroneous extra spaces.
 def parses_description_strings(string):
     try:
