@@ -13,14 +13,13 @@ import pandas as pd
 
 
 
-id = 'f9dcbd09-32ac-41d9-a0b1-fdb2793378cf'
-letters = ['a', 'b', 'c', 'd', 'e']
-for letter in letters:
+
+
+# The following function loads an image, based on the uuid of the airbnb item and a letter from a to e
+def load_image(id, letter):   
     unprocessed_image_location = 'airbnb-property-listings/images/{}'.format(id) + '/{}'.format(id) + '-{}.png'.format(letter)
     image = cv.imread(unprocessed_image_location, cv.IMREAD_COLOR)
-    cv.imshow('Image', image)
-    cv.waitKey(0)
-    cv.destroyAllWindows()
+    return image
 
 #The following function resizes an image. It returns an image with a height of 400 and the same proportions as the original image.
 def resize_image(image):
@@ -30,9 +29,17 @@ def resize_image(image):
     return image
 
 
+id = 'f9dcbd09-32ac-41d9-a0b1-fdb2793378cf'
+letters = ['a', 'b', 'c', 'd', 'e']
+for letter in letters:
+    image = load_image(id, letter)
+    image = resize_image(image)
+    
 
 
-
+#cv.imshow('Image', image)
+#cv.waitKey(0)
+#cv.destroyAllWindows()
 
 
 
