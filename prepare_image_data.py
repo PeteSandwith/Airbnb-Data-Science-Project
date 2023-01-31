@@ -9,6 +9,17 @@ import os
 # 3. Check that the image is in RBG format; if it isn't it should be discarded.
 # 4. Save the processed image in the folder Airbnb-Data-Science-Project/airbnb_property_listings/processed_images
 
+def process_images():
+    dataframe = pd.read_csv('airbnb-property-listings/tabular_data/cleaned_tabular_data.csv')
+    uuids = dataframe['ID'].values
+    for id in uuids:
+        #Creates a directory inside processed_images where all images of the same uuid will be saved
+        os.mkdir('airbnb-property-listings/processed_images/{}'.format(id))
+        letters = ['a', 'b', 'c', 'd', 'e']
+        for letter in letters:
+            image = load_image(id, letter)
+            image = resize_image(image)
+            save_image(image, id, letter)
 
 
 # The following function loads an image, based on the uuid of the airbnb item and a letter from a to e
@@ -32,21 +43,5 @@ def save_image(image, id, letter):
     print(Save)
 
 
-
-id = 'f9dcbd09-32ac-41d9-a0b1-fdb2793378cf'
-#Creates a directory inside processed_images where all images of the same uuid will be saved
-os.mkdir('airbnb-property-listings/processed_images/{}'.format(id))
-letters = ['a', 'b', 'c', 'd', 'e']
-for letter in letters:
-    
-    image = load_image(id, letter)
-    image = resize_image(image)
-    save_image(image, id = id, letter = letter)
-
-
-#cv.imshow('Image', image)
-#cv.waitKey(0)
-#cv.destroyAllWindows()
-
-
-
+if __name__ == "__main__":
+    process_images()
