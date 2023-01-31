@@ -8,10 +8,20 @@ import cv2 as cv
 # 4. Save the processed image in the folder Airbnb-Data-Science-Project/airbnb_property_listings/processed_images
 
 image = cv.imread('airbnb-property-listings/images/0a26e526-1adf-4a2a-888d-a05f7f0a2f33/0a26e526-1adf-4a2a-888d-a05f7f0a2f33-a.png', cv.IMREAD_COLOR)
+
+
+def resize_image(image):
+    dimensions = image.shape
+    scale = 400 / dimensions[0]
+    image = cv.resize(image, (0,0), fx = scale, fy = scale)
+    return image
+
+
+
+
+#The following code displays images
 #cv.imshow('Image', image)
 #cv.waitKey(0)
 #cv.destroyAllWindows()
-
-
 
 
