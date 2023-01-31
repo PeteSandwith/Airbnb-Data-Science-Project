@@ -7,9 +7,13 @@ import cv2 as cv
 # 3. Check that the image is in RBG format; if it isn't it should be discarded.
 # 4. Save the processed image in the folder Airbnb-Data-Science-Project/airbnb_property_listings/processed_images
 
-image = cv.imread('airbnb-property-listings/images/0a26e526-1adf-4a2a-888d-a05f7f0a2f33/0a26e526-1adf-4a2a-888d-a05f7f0a2f33-a.png', cv.IMREAD_COLOR)
+
+id = 'f9dcbd09-32ac-41d9-a0b1-fdb2793378cf'
+unprocessed_image_location = 'airbnb-property-listings/images/{}'.format(id) + '/{}'.format(id) + '-a.png'
+image = cv.imread(unprocessed_image_location, cv.IMREAD_COLOR)
 
 
+#The following function resizes an image. It returns an image with a height of 400 and the same proportions as the original image.
 def resize_image(image):
     dimensions = image.shape
     scale = 400 / dimensions[0]
