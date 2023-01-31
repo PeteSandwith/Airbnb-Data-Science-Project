@@ -13,13 +13,15 @@ def process_images():
     dataframe = pd.read_csv('airbnb-property-listings/tabular_data/cleaned_tabular_data.csv')
     uuids = dataframe['ID'].values
     for id in uuids:
-        #Creates a directory inside processed_images where all images of the same uuid will be saved
-        os.mkdir('airbnb-property-listings/processed_images/{}'.format(id))
         letters = ['a', 'b', 'c', 'd', 'e']
         for letter in letters:
             image = load_image(id, letter)
             if image is None:
                 break
+            if letter == 'a':
+                # Creates a directory inside processed_images where all images of the same uuid will be saved. 
+                # Only does this once for each uuid and only does it AFTER checking that load_image has not returned a NoneType object.
+                os.mkdir('airbnb-property-listings/processed_images/{}'.format(id))
             image = resize_image(image)
             save_image(image, id, letter)
 
