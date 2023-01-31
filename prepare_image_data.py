@@ -1,5 +1,6 @@
 
 import cv2 as cv
+import pandas as pd
 # Function has to :
 # 1. Load an image from Airbnb-Data-Science-Project/airbnb_property_listings/images 
 # 2. Resizes it to the same height and width; set the height of the smallest image as the height for all of the other images.
@@ -8,10 +9,18 @@ import cv2 as cv
 # 4. Save the processed image in the folder Airbnb-Data-Science-Project/airbnb_property_listings/processed_images
 
 
-id = 'f9dcbd09-32ac-41d9-a0b1-fdb2793378cf'
-unprocessed_image_location = 'airbnb-property-listings/images/{}'.format(id) + '/{}'.format(id) + '-a.png'
-image = cv.imread(unprocessed_image_location, cv.IMREAD_COLOR)
 
+
+
+
+id = 'f9dcbd09-32ac-41d9-a0b1-fdb2793378cf'
+letters = ['a', 'b', 'c', 'd', 'e']
+for letter in letters:
+    unprocessed_image_location = 'airbnb-property-listings/images/{}'.format(id) + '/{}'.format(id) + '-{}.png'.format(letter)
+    image = cv.imread(unprocessed_image_location, cv.IMREAD_COLOR)
+    cv.imshow('Image', image)
+    cv.waitKey(0)
+    cv.destroyAllWindows()
 
 #The following function resizes an image. It returns an image with a height of 400 and the same proportions as the original image.
 def resize_image(image):
@@ -23,9 +32,7 @@ def resize_image(image):
 
 
 
-#The following code displays images
-#cv.imshow('Image', image)
-#cv.waitKey(0)
-#cv.destroyAllWindows()
+
+
 
 
