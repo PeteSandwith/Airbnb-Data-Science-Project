@@ -18,6 +18,8 @@ def process_images():
         letters = ['a', 'b', 'c', 'd', 'e']
         for letter in letters:
             image = load_image(id, letter)
+            if image is None:
+                break
             image = resize_image(image)
             save_image(image, id, letter)
 
@@ -40,8 +42,8 @@ def save_image(image, id, letter):
     processed_image_location = 'airbnb-property-listings/processed_images/{}'.format(id) + '/{}'.format(id) + '-{}.png'.format(letter)
     print(processed_image_location)
     Save = cv.imwrite(processed_image_location, image)
-    print(Save)
 
 
 if __name__ == "__main__":
     process_images()
+
