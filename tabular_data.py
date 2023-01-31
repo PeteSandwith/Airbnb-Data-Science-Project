@@ -23,11 +23,13 @@ def set_default_feature_values(dataframe):
 # Function that removes any rows that have missing values in the ratings columns
 def remove_rows_with_missing_ratings(dataframe):
     dataframe.dropna(axis = 0, how = 'any', subset = ['Cleanliness_rating', 'Accuracy_rating', 'Communication_rating', 'Location_rating', 'Check-in_rating', 'Value_rating'], inplace = True)
+    dataframe.reset_index(drop=True, inplace=True)
     return dataframe
 
 def combine_description_strings(dataframe):
     #Removes any row without a description
     dataframe.dropna(axis = 0, how = 'any', subset = ['Description'], inplace = True)
+    dataframe.reset_index(drop=True, inplace=True)
     #Applies string parsing function to every entry in the Description column
     dataframe['Description'] = dataframe['Description'].apply(parses_description_strings)
     return dataframe
@@ -49,6 +51,7 @@ def parses_description_strings(string):
     except: 
         return string
 
+
 if __name__ == "__main__":
     dataset = pd.read_csv('airbnb-property-listings/tabular_data/listing.csv')
     cleaned_dataset = clean_tabular_data(dataset)
@@ -57,4 +60,3 @@ if __name__ == "__main__":
 
 
 
-# %%
