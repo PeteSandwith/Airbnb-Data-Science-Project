@@ -11,5 +11,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 model = linear_model.SGDRegressor()
 model.fit(X_train, y_train)
 
-y_pred = model.predict(X_test)
-print(metrics.mean_squared_error(y_pred, y_test))
+#Generates label predictions for the traning and test set
+y_predictions_train = model.predict(X_train)
+y_predictions_test = model.predict(X_test)
+
