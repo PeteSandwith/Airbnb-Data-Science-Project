@@ -21,3 +21,8 @@ R2_test = metrics.r2_score(y_test, y_predictions_test)
 print('The R2 score for the training set is: ' + str(R2_train))
 print('The R2 score for the test set is: ' + str(R2_test))
 
+# Calculates the root mean squared error for training and test sets
+rmse_train = metrics.mean_squared_error(y_train, y_predictions_train, squared = False)
+rmse_test = metrics.mean_squared_error(y_test, y_predictions_test, squared = False)
+print('The rmse for the training set is: ' + str(rmse_train))
+print('The rmse for the test set is: ' + str(rmse_test))
