@@ -5,13 +5,19 @@ from sklearn import linear_model
 from sklearn import metrics
 
 X, y = load_airbnb('cleaned_tabular_data.csv')
-#Splits the data into training and testing sets.
+# Splits the data into training and testing sets.
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
-#Creates and trains the model
+# Creates and trains the model
 model = linear_model.SGDRegressor()
 model.fit(X_train, y_train)
 
-#Generates label predictions for the traning and test set
+# Generates label predictions for the training and test sets
 y_predictions_train = model.predict(X_train)
 y_predictions_test = model.predict(X_test)
+
+# Calculates the R^2 regression score function for training and test sets
+R2_train = metrics.r2_score(y_train, y_predictions_train)
+R2_test = metrics.r2_score(y_test, y_predictions_test)
+print('The R2 score for the training set is: ' + str(R2_train))
+print('The R2 score for the test set is: ' + str(R2_test))
 
