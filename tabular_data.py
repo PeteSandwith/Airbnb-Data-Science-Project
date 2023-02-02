@@ -12,15 +12,14 @@ def clean_tabular_data(dataframe):
     return(dataframe)
 
 # Function that sets missing values in the 'beds', 'guests' 'bathrooms' and 'bedrooms' columns to 1 and returns the updated dataframe.
+# NB, from pandas docs (working with text data): 'There isn’t a clear way to select just text while excluding non-text but still object-dtype columns.'
 def set_default_feature_values(dataframe):
     dataframe['beds'].where(~dataframe['beds'].isna(), 1, inplace = True)
-    dataframe['beds'] = dataframe['beds'].apply(lambda x: 1 if type(x) == str else x)
     dataframe['guests'].where(~dataframe['guests'].isna(), 1, inplace = True)
-    dataframe['guests'] = dataframe['guests'].apply(lambda x: 1 if type(x) == str else x)
+    dataframe['guests'] = dataframe['guests'].apply(lambda x: 1 if x == 'Somerford Keynes England United Kingdom' else x)
     dataframe['bathrooms'].where(~dataframe['bathrooms'].isna(), 1, inplace = True)
-    dataframe['bathrooms'] = dataframe['bathrooms'].apply(lambda x: 1 if type(x) == str else x)
     dataframe['bedrooms'].where(~dataframe['bedrooms'].isna(), 1, inplace = True)
-    dataframe['bedrooms'] = dataframe['bedrooms'].apply(lambda x: 1 if type(x) == str else x)
+    dataframe['bedrooms'] = dataframe['bedrooms'].apply(lambda x: 1 if x == 'https://www.airbnb.co.uk/rooms/49009981?adults=1&category_tag=Tag%3A677&children=0&infants=0&search_mode=flex_destinations_search&check_in=2022-04-18&check_out=2022-04-25&previous_page_section_name=1000&federated_search_id=0b044c1c-8d17-4b03-bffb-5de13ff710bc' else x)
     return dataframe
 
 # Function that removes any rows that have missing values in the ratings columns
