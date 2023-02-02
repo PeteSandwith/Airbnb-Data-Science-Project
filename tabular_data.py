@@ -51,8 +51,8 @@ def parses_description_strings(string):
     except: 
         return string
 
-def load_airbnb():
-    dataset2 = pd.read_csv('airbnb-property-listings/tabular_data/cleaned_tabular_data.csv', index_col= 0)
+def load_airbnb(file):
+    dataset2 = pd.read_csv('airbnb-property-listings/tabular_data/{}'.format(file), index_col= 0)
     features = dataset2[['guests', 'beds', 'bathrooms', 'Cleanliness_rating', 'Accuracy_rating', 'Communication_rating', 'Location_rating', 'Check-in_rating', 'Value_rating', 'amenities_count', 'bedrooms']]
     labels = dataset2['Price_Night']
     return (features,labels)
@@ -61,5 +61,4 @@ if __name__ == "__main__":
     dataset = pd.read_csv('airbnb-property-listings/tabular_data/listing.csv')
     cleaned_dataset = clean_tabular_data(dataset)
     cleaned_dataset.to_csv('airbnb-property-listings/tabular_data/cleaned_tabular_data.csv')
-
 
