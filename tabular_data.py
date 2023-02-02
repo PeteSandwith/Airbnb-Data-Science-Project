@@ -1,5 +1,4 @@
 # %%
-from this import d
 from bleach import clean
 import pandas as pd
 import ast
@@ -16,6 +15,7 @@ def clean_tabular_data(dataframe):
 def set_default_feature_values(dataframe):
     dataframe['beds'].where(~dataframe['beds'].isna(), 1, inplace = True)
     dataframe['guests'].where(~dataframe['guests'].isna(), 1, inplace = True)
+    dataframe['guests'] = dataframe['guests'].apply(lambda x: 1 if type(x) == str else x)
     dataframe['bathrooms'].where(~dataframe['bathrooms'].isna(), 1, inplace = True)
     dataframe['bedrooms'].where(~dataframe['bedrooms'].isna(), 1, inplace = True)
     return dataframe
