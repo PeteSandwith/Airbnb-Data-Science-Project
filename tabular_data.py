@@ -14,10 +14,13 @@ def clean_tabular_data(dataframe):
 # Function that sets missing values in the 'beds', 'guests' 'bathrooms' and 'bedrooms' columns to 1 and returns the updated dataframe.
 def set_default_feature_values(dataframe):
     dataframe['beds'].where(~dataframe['beds'].isna(), 1, inplace = True)
+    dataframe['beds'] = dataframe['beds'].apply(lambda x: 1 if type(x) == str else x)
     dataframe['guests'].where(~dataframe['guests'].isna(), 1, inplace = True)
     dataframe['guests'] = dataframe['guests'].apply(lambda x: 1 if type(x) == str else x)
     dataframe['bathrooms'].where(~dataframe['bathrooms'].isna(), 1, inplace = True)
+    dataframe['bathrooms'] = dataframe['bathrooms'].apply(lambda x: 1 if type(x) == str else x)
     dataframe['bedrooms'].where(~dataframe['bedrooms'].isna(), 1, inplace = True)
+    dataframe['bedrooms'] = dataframe['bedrooms'].apply(lambda x: 1 if type(x) == str else x)
     return dataframe
 
 # Function that removes any rows that have missing values in the ratings columns
