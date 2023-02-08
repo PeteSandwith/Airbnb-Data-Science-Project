@@ -3,10 +3,15 @@ from sklearn.model_selection import train_test_split
 from tabular_data import load_airbnb
 from sklearn import linear_model
 from sklearn import metrics
+import numpy as np
+from sklearn.preprocessing import normalize
 
+np.random.seed(2)
 X, y = load_airbnb('cleaned_tabular_data.csv')
+# Normalises the feature data
+X = sklearn.preprocessing.normalize(X, norm='l2')
 # Splits the data into training and testing sets.
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state= 2)
 # Creates and trains the model
 model = linear_model.SGDRegressor()
 model.fit(X_train, y_train)
