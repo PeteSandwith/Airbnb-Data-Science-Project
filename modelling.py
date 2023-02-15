@@ -34,10 +34,24 @@ print('The rmse for the training set is: ' + str(rmse_train))
 print('The rmse for the test set is: ' + str(rmse_test))
 
 
-hyperparameters = {'penalty': ['l2', 'l1', 'elasticnet'], 'alpha': [0.0006, 0.0008, 0.001, 0.0012, 0.0014], 'rho': [0.75, 0.8, 0.85, 0.9, 0.95]}
-def custom_tune_regression_model_hyperparameters(model_class, datasets, hyperparameters):
-    hyperparameter_list = []
-    for penalty in hyperparameters['penalty']:
-        for alpha in hyperparameters['alpha']:
-            for rho in hyperparameters['rho']:
-                hyperparameter_list.append({'penalty': penalty, 'alpha': alpha, 'rho': rho})
+def custom_tune_regression_model_hyperparameters(dataset, hyperparameters):
+    hyperparameter_combinations = []
+    best_model = {'model': 0, 'validation_RMSE': 10000}
+    for loss in hyperparameters['loss']:
+        for penalty in hyperparameters['penalty']:
+            for alpha in hyperparameters['alpha']:
+                hyperparameter_combinations.append({'loss': loss, 'penalty': penalty, 'alpha': alpha})
+
+    for combination in hyperparameter_combinations:
+        model = linear_model.SGDRegressor(loss = combination['loss'], penalty = combination['penalty'], alpha = combination['alpha'], max_iter= 3000)
+        model.fit(dataset['X_train'], dataset['y_train'])
+        y_predictions_validation = model.predict(dataset['X_validation'])
+        rmse = metrics.mean_squared_error(dataset['y_validation'], y_predictions_validation, squared = False)
+        if rmse < best_model['validation_RMSE']:
+            best_model['model'] = model
+            best_model['validation_RMSE'] = rmse
+
+    return best_model
+
+hyperparameters = {'loss': ['epsilon_insensitive', 'squared_error', 'squared_epsilon_insensitive', 'huber'], 'penalty': ['l2', 'l1', 'elasticnet'], 'alpha': [0.0006, 0.0008, 0.001, 0.0012, 0.0014, 0.0015,  0.0016, 0.0018]}
+custom_tune_regression_model_hyperparameters(dataset={'X_train': X_train, 'y_train': y_train, 'X_validation': X_validation, 'y_validation': y_validation}, hyperparameters= hyperparameters)
