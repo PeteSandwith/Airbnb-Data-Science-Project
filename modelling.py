@@ -11,7 +11,8 @@ X, y = load_airbnb('cleaned_tabular_data.csv')
 # Normalises the feature data
 X = sklearn.preprocessing.normalize(X, norm='l2')
 # Splits the data into training and testing sets.
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state= 2)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state= 2)
+X_validation, X_test, y_validation, y_test = train_test_split(X_test, y_test, test_size=0.5, random_state= 2)
 # Creates and trains the model
 model = linear_model.SGDRegressor()
 model.fit(X_train, y_train)
@@ -31,3 +32,12 @@ rmse_train = metrics.mean_squared_error(y_train, y_predictions_train, squared = 
 rmse_test = metrics.mean_squared_error(y_test, y_predictions_test, squared = False)
 print('The rmse for the training set is: ' + str(rmse_train))
 print('The rmse for the test set is: ' + str(rmse_test))
+
+
+hyperparameters = {'penalty': ['l2', 'l1', 'elasticnet'], 'alpha': [0.0006, 0.0008, 0.001, 0.0012, 0.0014], 'rho': [0.75, 0.8, 0.85, 0.9, 0.95]}
+def custom_tune_regression_model_hyperparameters(model_class, datasets, hyperparameters):
+    hyperparameter_list = []
+    for penalty in hyperparameters['penalty']:
+        for alpha in hyperparameters['alpha']:
+            for rho in hyperparameters['rho']:
+                hyperparameter_list.append({'penalty': penalty, 'alpha': alpha, 'rho': rho})
