@@ -14,14 +14,22 @@ X = sklearn.preprocessing.normalize(X, norm='l2')
 # Splits the data into training and testing sets.
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state= 2)
 X_validation, X_test, y_validation, y_test = train_test_split(X_test, y_test, test_size=0.5, random_state= 2)
-# Creates and trains the model
-model = linear_model.SGDRegressor()
-model.fit(X_train, y_train)
+
+def create_base_model():
+    train_and_predict()
+    calculate_R2()
+    calculate_rmse()
 
 # Generates label predictions for the training and test sets
-y_predictions_train = model.predict(X_train)
-y_predictions_test = model.predict(X_test)
-y_predictions_validation = model.predict(X_validation)
+def train_and_predict():
+    # Creates and trains the model
+    model = linear_model.SGDRegressor()
+    model.fit(X_train, y_train)
+    
+    #Makes predictions
+    y_predictions_train = model.predict(X_train)
+    y_predictions_test = model.predict(X_test)
+    y_predictions_validation = model.predict(X_validation)
 
 # Calculates the R^2 regression score function for training and test sets
 def calculate_R2():
@@ -76,9 +84,7 @@ def tune_regression_model_hyperparameters(hyperparameters):
 
 
 best_estimator = tune_regression_model_hyperparameters(hyperparameters= hyperparameters)
-y_predict = best_estimator.predict(X_validation)
 
-print(metrics.r2_score(y_validation, y_predict))
-calculate_R2()
+
 
 #print(custom_tune_regression_model_hyperparameters(model_class = linear_model.SGDRegressor, dataset={'X_train': X_train, 'y_train': y_train, 'X_validation': X_validation, 'y_validation': y_validation}, hyperparameters= hyperparameters))
