@@ -21,13 +21,16 @@ model.fit(X_train, y_train)
 # Generates label predictions for the training and test sets
 y_predictions_train = model.predict(X_train)
 y_predictions_test = model.predict(X_test)
+y_predictions_validation = model.predict(X_validation)
 
 # Calculates the R^2 regression score function for training and test sets
 def calculate_R2():
     R2_train = metrics.r2_score(y_train, y_predictions_train)
     R2_test = metrics.r2_score(y_test, y_predictions_test)
+    R2_validation = metrics.r2_score(y_validation, y_predictions_validation)
     print('The R2 score for the training set is: ' + str(R2_train))
     print('The R2 score for the test set is: ' + str(R2_test))
+    print('The R2 score for the validation set is: ' + str(R2_validation))
 
 # Calculates the root mean squared error for training and test sets
 def calculate_rmse():
@@ -40,7 +43,7 @@ hyperparameters = {'loss': ['epsilon_insensitive', 'squared_error', 'squared_eps
 
 def custom_tune_regression_model_hyperparameters(model_class, dataset, hyperparameters):
     hyperparameter_combinations = []
-    best_model = {'model': 0, 'validation_RMSE': 10000}
+    best_model = {'model': 0, 'validation_RMSE': -10000}
     for loss in hyperparameters['loss']:
         for penalty in hyperparameters['penalty']:
             for alpha in hyperparameters['alpha']:
