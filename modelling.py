@@ -87,8 +87,13 @@ def tune_regression_model_hyperparameters(hyperparameters):
 
 def calculate_validation_r2(model, X):
     y = model.predict(X)
-    r2 = metrics.r2_score(y, y_validation)
+    r2 = metrics.r2_score(y_validation, y)
     return r2
+
+def calculate_validation_rmse(model, X):
+    y = model.predict(X)
+    rmse = metrics.mean_squared_error(y_validation, y, squared = False)
+    return rmse
 
 def save_model(folder, model):
     model_filename = folder + 'model.joblib'
