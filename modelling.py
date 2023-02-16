@@ -85,11 +85,19 @@ def tune_regression_model_hyperparameters(hyperparameters):
     best_estimator = grid.best_estimator_
     return best_estimator
 
-#def save_model(folder, model):
+def calculate_validation_r2(model, X):
+    y = model.predict(X)
+    r2 = metrics.r2_score(y, y_validation)
+    return r2
+
+def save_model(folder, model):
     model_filename = folder + 'model.joblib'
     hyperparameters_filename = folder + 'hyperparameters.json'
     performance_metrics_filename = folder + 'metrics.json'
     joblib.dump(model, model_filename)
+
+
+
 
 
 #best_estimator = tune_regression_model_hyperparameters(hyperparameters= hyperparameters)
