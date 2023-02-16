@@ -44,6 +44,7 @@ hyperparameters = {'loss': ['epsilon_insensitive', 'squared_error', 'squared_eps
 def custom_tune_regression_model_hyperparameters(model_class, dataset, hyperparameters):
     hyperparameter_combinations = []
     best_model = {'model': 0, 'validation_RMSE': -10000}
+
     for loss in hyperparameters['loss']:
         for penalty in hyperparameters['penalty']:
             for alpha in hyperparameters['alpha']:
@@ -61,14 +62,17 @@ def custom_tune_regression_model_hyperparameters(model_class, dataset, hyperpara
     return best_model
 
 def tune_regression_model_hyperparameters(hyperparameters):
-    grid = sklearn.model_selection.GridSearchCV(estimator= linear_model.SGDRegressor(), param_grid= hyperparameters, scoring= 'r2', refit= 'r2', verbose= 3)
+    grid = sklearn.model_selection.GridSearchCV(estimator= linear_model.SGDRegressor(), param_grid= hyperparameters, scoring= 'r2', refit= 'r2', verbose= 10)
     grid.fit(X_train, y_train)
     print(grid.best_estimator_)
     print(grid.best_params_)
-    print(grid.best_score_)
+    best_estimator = grid.best_estimator_
+    return best_estimator
 
 
 
-tune_regression_model_hyperparameters(hyperparameters= hyperparameters)
+best_estimator = tune_regression_model_hyperparameters(hyperparameters= hyperparameters)
+y_predict = best_estimator.predict(X_validation)
+print(metrics.r2_score(y_validation, y_predict))
 calculate_R2()
 #print(custom_tune_regression_model_hyperparameters(model_class = linear_model.SGDRegressor, dataset={'X_train': X_train, 'y_train': y_train, 'X_validation': X_validation, 'y_validation': y_validation}, hyperparameters= hyperparameters))
