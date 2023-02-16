@@ -16,9 +16,9 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_
 X_validation, X_test, y_validation, y_test = train_test_split(X_test, y_test, test_size=0.5, random_state= 2)
 
 def create_base_model():
-    train_and_predict()
-    calculate_R2()
-    calculate_rmse()
+    y_predictions_train, y_predictions_test, y_predictions_validation = train_and_predict()
+    calculate_R2(y_predictions_train = y_predictions_train, y_predictions_test = y_predictions_test, y_predictions_validation = y_predictions_validation)
+    calculate_rmse(y_predictions_train = y_predictions_train, y_predictions_test = y_predictions_test, y_predictions_validation = y_predictions_validation)
 
 # Generates label predictions for the training and test sets
 def train_and_predict():
@@ -31,8 +31,10 @@ def train_and_predict():
     y_predictions_test = model.predict(X_test)
     y_predictions_validation = model.predict(X_validation)
 
-# Calculates the R^2 regression score function for training and test sets
-def calculate_R2():
+    return y_predictions_train, y_predictions_test, y_predictions_validation
+
+# Calculates the R^2 regression score function for training, test and validation sets
+def calculate_R2(y_predictions_train, y_predictions_test, y_predictions_validation):
     R2_train = metrics.r2_score(y_train, y_predictions_train)
     R2_test = metrics.r2_score(y_test, y_predictions_test)
     R2_validation = metrics.r2_score(y_validation, y_predictions_validation)
@@ -40,12 +42,14 @@ def calculate_R2():
     print('The R2 score for the test set is: ' + str(R2_test))
     print('The R2 score for the validation set is: ' + str(R2_validation))
 
-# Calculates the root mean squared error for training and test sets
-def calculate_rmse():
+# Calculates the root mean squared error for training, test and validation sets
+def calculate_rmse(y_predictions_train, y_predictions_test, y_predictions_validation):
     rmse_train = metrics.mean_squared_error(y_train, y_predictions_train, squared = False)
     rmse_test = metrics.mean_squared_error(y_test, y_predictions_test, squared = False)
+    rmse_validation = metrics.mean_squared_error(y_validation, y_predictions_validation, squared = False)
     print('The rmse for the training set is: ' + str(rmse_train))
     print('The rmse for the test set is: ' + str(rmse_test))
+    print('The rmse for the test set is: ' + str(rmse_validation))
 
 hyperparameters = {'loss': ['epsilon_insensitive', 'squared_error', 'squared_epsilon_insensitive', 'huber'], 'penalty': ['l2', 'l1', 'elasticnet'], 'alpha': [0.00006, 0.00008, 0.0001, 0.00012, 0.00014, 0.00015,  0.00016, 0.00018], 'max_iter': [3000]}
 
@@ -81,10 +85,15 @@ def tune_regression_model_hyperparameters(hyperparameters):
     best_estimator = grid.best_estimator_
     return best_estimator
 
+#def save_model(folder, model):
+    model_filename = folder + 'model.joblib'
+    hyperparameters_filename = folder + 'hyperparameters.json'
+    performance_metrics_filename = folder + 'metrics.json'
+    joblib.dump(model, model_filename)
 
 
-best_estimator = tune_regression_model_hyperparameters(hyperparameters= hyperparameters)
-
-
-
+#best_estimator = tune_regression_model_hyperparameters(hyperparameters= hyperparameters)
+#best_parameters = best_estimator.get_params()
+#create_base_model()
+#
 #print(custom_tune_regression_model_hyperparameters(model_class = linear_model.SGDRegressor, dataset={'X_train': X_train, 'y_train': y_train, 'X_validation': X_validation, 'y_validation': y_validation}, hyperparameters= hyperparameters))
