@@ -1,3 +1,4 @@
+from multiprocessing.spawn import prepare
 import sklearn
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
@@ -10,15 +11,17 @@ import joblib
 import json
 import os
 
-np.random.seed(2)
-X, y = load_airbnb('cleaned_tabular_data.csv')
-# Normalises the feature data
-X = sklearn.preprocessing.normalize(X, norm='l2')
-# Splits the data into training and testing sets.
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state= 2)
-X_validation, X_test, y_validation, y_test = train_test_split(X_test, y_test, test_size=0.5, random_state= 2)
-
-def create_base_model():
+def prepare_data(data):
+    np.random.seed(2)
+    X, y = load_airbnb(data)
+    # Normalises the feature data
+    X = sklearn.preprocessing.normalize(X, norm='l2')
+    # Splits the data into training and testing sets.
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state= 2)
+    X_validation, X_test, y_validation, y_test = train_test_split(X_test, y_test, test_size=0.5, random_state= 2)
+    return X_train, X_validation, X_test, y_train, y_validation, y_test
+    
+class base_regression_model():
     y_predictions_train, y_predictions_test, y_predictions_validation = train_and_predict()
     calculate_R2(y_predictions_train = y_predictions_train, y_predictions_test = y_predictions_test, y_predictions_validation = y_predictions_validation)
     calculate_rmse(y_predictions_train = y_predictions_train, y_predictions_test = y_predictions_test, y_predictions_validation = y_predictions_validation)
@@ -118,7 +121,7 @@ def save_model(folder, model, metrics, hyperparameters):
         json.dump(metrics, file) 
 
 
-
+X_train, X_validation, X_test, y_train, y_validation, y_test = prepare_data(data= 'cleaned_tabular_data.csv')
 
 best_estimator, best_performance_metrics, best_hyperparameters = tune_regression_model_hyperparameters(model = linear_model.SGDRegressor(), hyperparameters= hyperparameters)
 
