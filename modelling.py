@@ -6,6 +6,9 @@ from sklearn import linear_model
 from sklearn import metrics
 import numpy as np
 from sklearn.preprocessing import normalize
+import joblib
+import json
+import os
 
 np.random.seed(2)
 X, y = load_airbnb('cleaned_tabular_data.csv')
@@ -77,36 +80,49 @@ def custom_tune_regression_model_hyperparameters(model_class, dataset, hyperpara
     return best_model
 
 # Uses GridSearchCV to determine the best comibination of hyperparameters and returns the best performing model. 
-def tune_regression_model_hyperparameters(hyperparameters):
-    grid = sklearn.model_selection.GridSearchCV(estimator= linear_model.SGDRegressor(), param_grid= hyperparameters, scoring= 'r2', refit= 'r2', verbose= 10)
+def tune_regression_model_hyperparameters(model, hyperparameters):
+    grid = sklearn.model_selection.GridSearchCV(estimator= model, param_grid= hyperparameters, scoring= 'r2', refit= 'r2', verbose= 10)
     grid.fit(X_train, y_train)
-    #print(grid.best_estimator_)
-    #print(grid.best_params_)
+    
     best_estimator = grid.best_estimator_
-    return best_estimator
+    best_performance_metrics = {'r2': calculate_validation_r2(model = best_estimator), 'rmse': calculate_validation_rmse(model= best_estimator)}
+    best_hyperparameters = best_estimator.get_params()
 
-def calculate_validation_r2(model, X):
-    y = model.predict(X)
+    return best_estimator, best_performance_metrics, best_hyperparameters
+
+def calculate_validation_r2(model):
+    y = model.predict(X_validation)
     r2 = metrics.r2_score(y_validation, y)
     return r2
 
-def calculate_validation_rmse(model, X):
-    y = model.predict(X)
+def calculate_validation_rmse(model):
+    y = model.predict(X_validation)
     rmse = metrics.mean_squared_error(y_validation, y, squared = False)
     return rmse
 
-def save_model(folder, model):
+def save_model(folder, model, metrics, hyperparameters):
+    current_directory = os.getcwd()
     model_filename = folder + 'model.joblib'
     hyperparameters_filename = folder + 'hyperparameters.json'
     performance_metrics_filename = folder + 'metrics.json'
-    joblib.dump(model, model_filename)
+
+    # Saves the model 
+    joblib.dump(model, os.path.join(current_directory, model_filename))
+
+    # Saves the hyperparameters
+    with open(os.path.join(current_directory, hyperparameters_filename), "w") as file:
+        json.dump(hyperparameters, file) 
+
+    # Saves the metrics
+    with open(os.path.join(current_directory, performance_metrics_filename), "w") as file:
+        json.dump(metrics, file) 
 
 
 
 
+best_estimator, best_performance_metrics, best_hyperparameters = tune_regression_model_hyperparameters(model = linear_model.SGDRegressor(), hyperparameters= hyperparameters)
 
-#best_estimator = tune_regression_model_hyperparameters(hyperparameters= hyperparameters)
-#best_parameters = best_estimator.get_params()
-#create_base_model()
-#
-#print(custom_tune_regression_model_hyperparameters(model_class = linear_model.SGDRegressor, dataset={'X_train': X_train, 'y_train': y_train, 'X_validation': X_validation, 'y_validation': y_validation}, hyperparameters= hyperparameters))
+#save_model(folder = 'Models/Regression/Linear_Regression/', model = best_estimator, metrics = best_performance_metrics, hyperparameters = best_hyperparameters)
+
+
+
