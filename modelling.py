@@ -122,10 +122,20 @@ def save_model(folder, model, metrics, hyperparameters):
         json.dump(metrics, file) 
 
 
-X_train, X_validation, X_test, y_train, y_validation, y_test = prepare_data(data= 'cleaned_tabular_data.csv')
-base_regression_model()
 
-#best_estimator, best_performance_metrics, best_hyperparameters = tune_regression_model_hyperparameters(model = linear_model.SGDRegressor(), hyperparameters= hyperparameters)
+if __name__ == "__main__":
+    X_train, X_validation, X_test, y_train, y_validation, y_test = prepare_data(data= 'cleaned_tabular_data.csv')
+    #base_regression_model()
+
+    SGDRegressor_hyperparameters = {
+        'loss': ['epsilon_insensitive', 'squared_error', 'squared_epsilon_insensitive', 'huber'],
+        'penalty': ['l2', 'l1', 'elasticnet'],
+        'alpha': [0.00006, 0.00008, 0.0001, 0.00012, 0.00014, 0.00015,  0.00016, 0.00018],
+        'max_iter': [3000]
+        }
+
+    best_estimator, best_performance_metrics, best_hyperparameters = tune_regression_model_hyperparameters(model = linear_model.SGDRegressor(), hyperparameters= SGDRegressor_hyperparameters)
+
 
 #save_model(folder = 'Models/Regression/Linear_Regression/', model = best_estimator, metrics = best_performance_metrics, hyperparameters = best_hyperparameters)
 
