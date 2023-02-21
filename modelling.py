@@ -5,6 +5,7 @@ from sklearn.model_selection import GridSearchCV
 from tabular_data import load_airbnb
 from sklearn import linear_model
 from sklearn import metrics
+from sklearn import tree
 import numpy as np
 from sklearn.preprocessing import normalize
 import joblib
@@ -134,10 +135,36 @@ if __name__ == "__main__":
         'max_iter': [3000]
         }
 
-    best_estimator, best_performance_metrics, best_hyperparameters = tune_regression_model_hyperparameters(model = linear_model.SGDRegressor(), hyperparameters= SGDRegressor_hyperparameters)
+    #A greater number of different hyperparameters have been tested; this list is less expansive due to the time taken to compute all different combinations.
+    DecisionTreeRegressor_hyperparameters = {
+        'criterion': ['friedman_mse'],
+        'splitter': ['best', 'random'],
+        'max_depth': [4, 5, 6, 7],
+        'min_samples_split': [3, 4, 5],
+        'min_samples_leaf': [1, 2, 3],
+        'min_weight_fraction_leaf': [0.0, 0.005, 0.01],
+        'max_features': ['auto'],
+        'random_state': [None, 1],
+        'max_leaf_nodes': [None, 1],
+        'min_impurity_decrease': [0.04, 0.05, 0.06],
+        'ccp_alpha': [0.05, 0.075, 0.1, 0.125]
+        }
 
+    
+    best_estimator, best_performance_metrics, best_hyperparameters = tune_regression_model_hyperparameters(model = tree.DecisionTreeRegressor(), hyperparameters= DecisionTreeRegressor_hyperparameters)
+    print(best_estimator)
+    print(best_hyperparameters)
+    print(best_performance_metrics)
 
 #save_model(folder = 'Models/Regression/Linear_Regression/', model = best_estimator, metrics = best_performance_metrics, hyperparameters = best_hyperparameters)
 
 
 
+#'min_samples_split': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+#        'min_samples_leaf': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+#        'min_weight_fraction_leaf': [0.0, 0.1, 0.2, 0.3, 0.4, 0.5],
+ #       'max_features': ['auto', 'sqrt', 'log2'],
+  #      'random_state': [None, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+   #     'max_leaf_nodes': [None, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    #    'min_impurity_decrease': [0.0, 0.1, 0.2, 0.3, 0.4, 0.5],
+     #   'ccp_alpha': [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]#
