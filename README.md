@@ -57,7 +57,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_
 X_validation, X_test, y_validation, y_test = train_test_split(X_test, y_test, test_size=0.5, random_state= 2)
 ```
 - It is important to split the data in this way so that when the time comes to comparing different models and tuning hyperparameters, the comparisons are not being made on data that the model had access to during training. For example, if a model has a high capacity it will be more prone to overfitting. An overfit model will of course appear to perform very well when evaluated on the training data set, but may perform poorly on previously unseen data. In this instance, comparing the overfit model to other models using the validation data set will be far more useful because it gives a better measure of how well the model will generalise to new data.
-- The performance of models can be evaluated using a wide variety of different metrics provided by scikit-learn. The two metrics chosen to evaluate the SGDRegressor model were the R**2 Score and the root mean squared error:
+- The performance of models can be evaluated using a wide variety of different metrics provided by scikit-learn. The two metrics chosen to evaluate the SGDRegressor model were the R2 Score and the root mean squared error:
 ```
 def __calculate_R2__(self, y_predictions_train, y_predictions_test, y_predictions_validation):
         R2_train = metrics.r2_score(y_train, y_predictions_train)
