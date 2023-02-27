@@ -46,7 +46,7 @@ def load_airbnb(file):
     labels = dataset2['Price_Night']
     return (features,labels)
 ```
-    where X was a pandas dataframe containing the features, or the input data used by the models to generate predictions, and y was pandas series containing the labels, or the data that we want the models to predict. In this case the features data contained a number of different variables for each property, and the label was the price per night of the property. 
+where X was a pandas dataframe containing the features, or the input data used by the models to generate predictions, and y was pandas series containing the labels, or the data that we want the models to predict. In this case the features data contained a number of different variables for each property, and the label was the price per night of the property. 
 - The first model to be implemented was the SGDRegressor model. This is a built-in model class from scikit-learn, a python library that contains various machine learning tools and algorithms. SGD stands for stochastic gradient descent, a reference to the iterative process used by the algorithm to minimise the loss function of the model. In order to improve the model's performance the features data were first normalised:
 ```
 X = sklearn.preprocessing.normalize(X, norm='l2')
@@ -56,4 +56,5 @@ The features and label data were then split into training, test and validation s
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state= 2)
 X_validation, X_test, y_validation, y_test = train_test_split(X_test, y_test, test_size=0.5, random_state= 2)
 ```
-It is important to split the data in this way so that when the time comes to comparing different models and tuning hyperparameters, the comparisons are not being made on data that the model had access to during training. For example, if a model has a high capacity it will be more prone to overfitting. An overfit model will of course appear to perform very well when evaluated on the training data set, but may perform poorly on previously unseen data. In this instance, comparing the overfit model to other models using the validation data set will be far more useful because it gives a better measure of how well the model will generalise to new data.
+- It is important to split the data in this way so that when the time comes to comparing different models and tuning hyperparameters, the comparisons are not being made on data that the model had access to during training. For example, if a model has a high capacity it will be more prone to overfitting. An overfit model will of course appear to perform very well when evaluated on the training data set, but may perform poorly on previously unseen data. In this instance, comparing the overfit model to other models using the validation data set will be far more useful because it gives a better measure of how well the model will generalise to new data.
+- The performance of models can be evaluated using a wide variety of different metrics provided by scikit-learn. 
