@@ -13,9 +13,9 @@ import joblib
 import json
 import os
 
-def prepare_data(data):
+def prepare_data(data, feature_columns, label_columns):
     np.random.seed(2)
-    X, y = load_airbnb(data)
+    X, y = load_airbnb(file=data, feature_columns= feature_columns, label_columns= label_columns)
     # Normalises the feature data
     X = sklearn.preprocessing.normalize(X, norm='l2')
     # Splits the data into training and testing sets.
@@ -144,9 +144,9 @@ def find_best_model(dictionary):
             best_model = model['estimator']
     return best_model, hyperparams, performance_metrics
 
-    
+
 if __name__ == "__main__":
-    X_train, X_validation, X_test, y_train, y_validation, y_test = prepare_data(data= 'cleaned_tabular_data.csv')
+    X_train, X_validation, X_test, y_train, y_validation, y_test = prepare_data(data= 'cleaned_tabular_data.csv', feature_columns=['guests', 'beds', 'bathrooms', 'Cleanliness_rating', 'Accuracy_rating', 'Communication_rating', 'Location_rating', 'Check-in_rating', 'Value_rating', 'amenities_count', 'bedrooms'], label_columns= 'Price_Night')
     #base_regression_model()
 
     SGDRegressor_hyperparameters = {
