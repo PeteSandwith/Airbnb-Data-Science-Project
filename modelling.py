@@ -124,10 +124,27 @@ def save_model(folder, model, metrics, hyperparameters):
         json.dump(metrics, file) 
 
 def evaluate_all_models(model_dictionaries):
+    model_comparisons = []
     for item in model_dictionaries:
         best_estimator, best_performance_metrics, best_hyperparameters = tune_regression_model_hyperparameters(model = item['model'], hyperparameters = item['hyperparameters'])
+        model_comparisons.append({'estimator': best_estimator, 'metrics': best_performance_metrics, 'hyperparameters': best_hyperparameters})
         save_model(folder = item['folder'], model = best_estimator, metrics = best_performance_metrics, hyperparameters= best_hyperparameters)
+    return model_comparisons
 
+def find_best_model(dictionary):
+    best_model = None
+    hyperparams = None 
+    performance_metrics = None
+    r2 = -10^10
+    for model in dictionary: 
+        if model['metrics']['r2'] > r2:
+            r2 = model['metrics']['r2']
+            performance_metrics = model['metrics']
+            hyperparams = model['hyperparameters']
+            best_model = model['estimator']
+    return best_model, hyperparams, performance_metrics
+
+    
 if __name__ == "__main__":
     X_train, X_validation, X_test, y_train, y_validation, y_test = prepare_data(data= 'cleaned_tabular_data.csv')
     #base_regression_model()
@@ -182,9 +199,11 @@ if __name__ == "__main__":
     {'model': ensemble.RandomForestRegressor(), 'hyperparameters': RandomForestRegressor_hyperparameters, 'folder': 'Models/Regression/Random_Forest_Regressor/'}, 
     {'model': ensemble.GradientBoostingRegressor(), 'hyperparameters': GradientBoostingRegressor_hyperparameters, 'folder': 'Models/Regression/Gradient_Boosting_Regressor/'}]
 
-    evaluate_all_models(model_dictionaries= model_dictionaries)
-
-
+    model_comparisons = evaluate_all_models(model_dictionaries= model_dictionaries)
+    best_estimator, best_performance_metrics, best_hyperparameters = find_best_model(dictionary= model_comparisons)
+    print(best_estimator)
+    print(best_hyperparameters)
+    print(best_performance_metrics)
 
 #'min_samples_split': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
 #        'min_samples_leaf': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
