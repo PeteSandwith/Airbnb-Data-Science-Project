@@ -6,6 +6,7 @@ from tabular_data import load_airbnb
 from sklearn import linear_model
 from sklearn import metrics
 from sklearn import tree
+from sklearn import ensemble
 import numpy as np
 from sklearn.preprocessing import normalize
 import joblib
@@ -122,7 +123,10 @@ def save_model(folder, model, metrics, hyperparameters):
     with open(os.path.join(current_directory, performance_metrics_filename), "w") as file:
         json.dump(metrics, file) 
 
-
+def evaluate_all_models(model_dictionaries):
+    for item in model_dictionaries:
+        best_estimator, best_performance_metrics, best_hyperparameters = tune_regression_model_hyperparameters(model = item['model'], hyperparameters = item['hyperparameters'])
+        save_model(folder = item['folder'], model = best_estimator, metrics = best_performance_metrics, hyperparameters= best_hyperparameters)
 
 if __name__ == "__main__":
     X_train, X_validation, X_test, y_train, y_validation, y_test = prepare_data(data= 'cleaned_tabular_data.csv')
@@ -150,13 +154,35 @@ if __name__ == "__main__":
         'ccp_alpha': [0.05, 0.075, 0.1, 0.125]
         }
 
-    
-    best_estimator, best_performance_metrics, best_hyperparameters = tune_regression_model_hyperparameters(model = tree.DecisionTreeRegressor(), hyperparameters= DecisionTreeRegressor_hyperparameters)
-    print(best_estimator)
-    print(best_hyperparameters)
-    print(best_performance_metrics)
+    RandomForestRegressor_hyperparameters = {
+        'n_estimators': [100],
+        'criterion': ["poisson"],
+        'min_samples_split': [2, 3, 4], 
+        'min_samples_leaf': [1, 2, 3],
+        'min_weight_fraction_leaf': [0.5, 0.01, 0.015], 
+        'max_features': ['sqrt'],
+        'min_impurity_decrease': [0.01],
+        'verbose': [0],
+        'ccp_alpha': [0.005, 0.01, 0.015] 
+        }
 
-#save_model(folder = 'Models/Regression/Linear_Regression/', model = best_estimator, metrics = best_performance_metrics, hyperparameters = best_hyperparameters)
+    GradientBoostingRegressor_hyperparameters = {
+        'loss': ['absolute_error'],
+        'learning_rate': [0.07, 0.075, 0.08],
+        'n_estimators': [100],
+        'subsample': [1],
+        'min_samples_leaf': [1],
+        'max_depth': [None],
+        'alpha': [0.75, 0.8, 0.85],
+        'ccp_alpha': [0.0, 0.005]
+        }
+
+    model_dictionaries = [{'model': linear_model.SGDRegressor(), 'hyperparameters': SGDRegressor_hyperparameters, 'folder': 'Models/Regression/Linear_Regression/'}, 
+    {'model': tree.DecisionTreeRegressor(), 'hyperparameters': DecisionTreeRegressor_hyperparameters, 'folder': 'Models/Regression/Decision_Tree_Regressor/'}, 
+    {'model': ensemble.RandomForestRegressor(), 'hyperparameters': RandomForestRegressor_hyperparameters, 'folder': 'Models/Regression/Random_Forest_Regressor/'}, 
+    {'model': ensemble.GradientBoostingRegressor(), 'hyperparameters': GradientBoostingRegressor_hyperparameters, 'folder': 'Models/Regression/Gradient_Boosting_Regressor/'}]
+
+    evaluate_all_models(model_dictionaries= model_dictionaries)
 
 
 
@@ -168,3 +194,26 @@ if __name__ == "__main__":
    #     'max_leaf_nodes': [None, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     #    'min_impurity_decrease': [0.0, 0.1, 0.2, 0.3, 0.4, 0.5],
      #   'ccp_alpha': [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]#
+
+
+  #    'n_estimators': [100],
+   #     'criterion': ["poisson"],
+    #    'min_samples_split': [1, 2, 3], 3
+     #   'min_samples_leaf': [1, 2], 2
+      #  'min_weight_fraction_leaf': [0.0, 0.01], 0.01
+       # 'max_features': ['sqrt'],
+        #'min_impurity_decrease': [0.0, 0.01], 0.01
+        #'verbose': [0],
+        #'ccp_alpha': [0, 0.01] 0.01
+
+# GradientBoostingRegressor_hyperparameters = {
+#        'loss': ['squared_error', 'absolute_error', 'huber', 'quantile'],
+ #       'learning_rate': [0.075, 0.1, 0.125],
+  #      'n_estimators': [80, 100, 120],
+   #     'subsample': [0.8, 0.9, 1],
+    #    'min_samples_leaf': [0.5, 1, 2],
+     #   'max_depth': [None, 3],
+      #  'alpha': [0.8, 0.9, 1],
+       # 'ccp_alpha': [0.0, 0.01, 0.02]
+        #}
+
