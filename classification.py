@@ -13,6 +13,22 @@ model = sklearn.linear_model.LogisticRegression()
 model.fit(X_train, y_train)
 print(model.score(X_validation, y_validation))
 
+def calculate_scores(X_train, X_test, y_train, y_test, model):
+    f1_train = calculate_f1(X_train, y_train, model)
+    f1_test = calculate_f1(X_test, y_test, model)
+    precision_train = calculate_precision(X_train, y_train, model)
+    precision_test = calculate_precision(X_test, y_test, model)
+    recall_train = calculate_recall(X_train, y_train, model)
+    recall_test = calculate_recall(X_test, y_test, model)
+    accuracy_train = calculate_accuracy(X_train, y_train, model)
+    accuracy_test = calculate_accuracy(X_test, y_test, model)
+    
+    print("The f1 score on the training set is: " + f1_train + " and on the test set is: " + f1_test)
+    print("The precision score on the training set is: " + precision_train + " and on the test set is: " + precision_test)
+    print("The recall score on the training set is: " + recall_train + " and on the test set is: " + recall_test)
+    print("The accuracy score on the training set is: " + accuracy_train + " and on the test set is: " + accuracy_test)
+
+
 def calculate_f1(X, y, model):
     y_predicted = model.predict(X)
     f1 = metrics.f1_score(y, y_predicted)
