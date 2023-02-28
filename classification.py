@@ -27,3 +27,8 @@ def calculate_recall(X, y, model):
     y_predicted = model.predict(X)
     recall = metrics.recall_score(y, y_predicted)
     return recall
+
+def calculate_accuracy(X, y, model):
+    y_predicted = model.predict(X)
+    accuracy = metrics.accuracy_score(y, y_predicted)
+    return accuracy
