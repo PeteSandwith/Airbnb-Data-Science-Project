@@ -46,12 +46,24 @@ def calculate_accuracy(X, y, model):
     return accuracy
 
 def tune_classification_model_hyperparameters(model, hyperparameters):
-    f1_scorer = metrics.make_scorer(metrics.f1_score, average= "macro")
-    grid = sklearn.model_selection.GridSearchCV(estimator= model, param_grid= hyperparameters, scoring= f1_scorer, verbose= 10)
+    #f1_scorer = metrics.make_scorer(metrics.f1_score, average= "macro")
+    grid = sklearn.model_selection.GridSearchCV(estimator= model, param_grid= hyperparameters, scoring= 'accuracy', verbose= 10)
     grid.fit(X_train, y_train)
     
     best_estimator = grid.best_estimator_
-    best_performance_metrics = {'f1': calculate_f1(X_train, y_train, model = best_estimator)}
+    best_performance_metrics = {
+        'f1_train': calculate_f1(X_train, y_train, best_estimator),
+        'f1_test': calculate_f1(X_test, y_test, best_estimator),
+        'f1_train': calculate_f1(X_train, y_train, best_estimator),
+        'f1_test': calculate_f1(X_test, y_test, best_estimator),
+        'precision_train': calculate_precision(X_train, y_train, best_estimator),
+        'precision_test': calculate_precision(X_test, y_test, best_estimator),
+        'recall_train': calculate_recall(X_train, y_train, best_estimator),
+        'recall_test': calculate_recall(X_test, y_test, best_estimator),
+        'accuracy_train': calculate_accuracy(X_train, y_train, best_estimator),
+        'accuracy_test': calculate_accuracy(X_test, y_test, best_estimator),
+        'accuracy_validation': calculate_accuracy(X_validation, y_validation, best_estimator)
+    }
     best_hyperparameters = best_estimator.get_params()
 
     return best_estimator, best_performance_metrics, best_hyperparameters
