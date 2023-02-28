@@ -17,3 +17,9 @@ def calculate_f1(X, y, model):
     y_predicted = model.predict(X)
     f1 = metrics.f1_score(y, y_predicted)
     return f1
+
+def calculate_precision(X, y, model):
+    y_predicted = model.predict(X)
+    precision = metrics.precision_score(y, y_predicted)
+    return precision
+
