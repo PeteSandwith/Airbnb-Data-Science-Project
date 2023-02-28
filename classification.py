@@ -1,13 +1,13 @@
 import sklearn
 from sklearn import metrics
 import numpy as np
+from sklearn import linear_model
 from modelling import prepare_data
 
 
 # Use sklearn to compute the key measures of performance for your classification model. 
 # That should include the F1 score, the precision, the recall, and the accuracy for both the training and test sets.
 
-X_train, X_validation, X_test, y_train, y_validation, y_test = prepare_data(data = 'cleaned_tabular_data.csv', feature_columns= ['guests', 'beds', 'bathrooms', 'Cleanliness_rating', 'Accuracy_rating', 'Communication_rating', 'Location_rating', 'Check-in_rating', 'Value_rating', 'amenities_count', 'bedrooms'], label_columns='Category')
 
 def calculate_scores(X_train, X_test, y_train, y_test, model):
     f1_train = calculate_f1(X_train, y_train, model)
@@ -45,6 +45,33 @@ def calculate_accuracy(X, y, model):
     accuracy = metrics.accuracy_score(y, y_predicted)
     return accuracy
 
-model = sklearn.linear_model.LogisticRegression()
-model.fit(X_train, y_train)
-calculate_scores(X_train, X_test, y_train, y_test, model)
+def tune_classification_model_hyperparameters(model, hyperparameters):
+    f1_scorer = metrics.make_scorer(metrics.f1_score, average= "macro")
+    grid = sklearn.model_selection.GridSearchCV(estimator= model, param_grid= hyperparameters, scoring= f1_scorer, verbose= 10)
+    grid.fit(X_train, y_train)
+    
+    best_estimator = grid.best_estimator_
+    best_performance_metrics = {'f1': calculate_f1(X_train, y_train, model = best_estimator)}
+    best_hyperparameters = best_estimator.get_params()
+
+    return best_estimator, best_performance_metrics, best_hyperparameters
+
+
+logistic_regression_hyperparameters = {
+    'penalty': ['l2', None],
+    'solver': ['lbfgs', 'newton-cg', 'newton-cholesky', 'sag'],
+    'max_iter': [200],
+    'C': [0.8, 0.9, 1.0, 1.1, 1.2],
+
+    }
+X_train, X_validation, X_test, y_train, y_validation, y_test = prepare_data(data = 'cleaned_tabular_data.csv', feature_columns= ['guests', 'beds', 'bathrooms', 'Cleanliness_rating', 'Accuracy_rating', 'Communication_rating', 'Location_rating', 'Check-in_rating', 'Value_rating', 'amenities_count', 'bedrooms'], label_columns='Category')
+
+best_estimator, best_performance_metrics, best_hyperparameters = tune_classification_model_hyperparameters(linear_model.LogisticRegression(), logistic_regression_hyperparameters)
+print(best_estimator)
+print(best_hyperparameters)
+print(best_performance_metrics)
+
+
+#model = sklearn.linear_model.LogisticRegression()
+#model.fit(X_train, y_train)
+#calculate_scores(X_train, X_test, y_train, y_test, model)
