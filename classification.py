@@ -23,3 +23,7 @@ def calculate_precision(X, y, model):
     precision = metrics.precision_score(y, y_predicted)
     return precision
 
+def calculate_recall(X, y, model):
+    y_predicted = model.predict(X)
+    recall = metrics.recall_score(y, y_predicted)
+    return recall
