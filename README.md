@@ -67,3 +67,4 @@ def __calculate_R2__(self, y_predictions_train, y_predictions_test, y_prediction
         print('The R2 score for the test set is: ' + str(R2_test))
         print('The R2 score for the validation set is: ' + str(R2_validation))
 ```
+
