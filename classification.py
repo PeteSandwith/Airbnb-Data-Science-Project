@@ -71,6 +71,28 @@ def tune_classification_model_hyperparameters(model, hyperparameters):
 
     return best_estimator, best_performance_metrics, best_hyperparameters
 
+def evaluate_all_models(model_dictionaries):
+    model_comparisons = []
+    for item in model_dictionaries:
+        best_estimator, best_performance_metrics, best_hyperparameters = tune_classification_model_hyperparameters(model = item['model'], hyperparameters = item['hyperparameters'])
+        model_comparisons.append({'estimator': best_estimator, 'metrics': best_performance_metrics, 'hyperparameters': best_hyperparameters})
+        save_model(folder = item['folder'], model = best_estimator, metrics = best_performance_metrics, hyperparameters= best_hyperparameters)
+    return model_comparisons
+
+def find_best_model(dictionary):
+    best_model = None
+    hyperparams = None 
+    performance_metrics = None
+    accuracy = 0
+    for model in dictionary: 
+        if model['metrics']['accuracy_validation'] > accuracy:
+            accuracy = model['metrics']['accuracy_validation']
+            performance_metrics = model['metrics']
+            hyperparams = model['hyperparameters']
+            best_model = model['estimator']
+    return best_model, hyperparams, performance_metrics
+
+
 
 if __name__ == "__main__":
 
@@ -119,11 +141,13 @@ if __name__ == "__main__":
     {'model': ensemble.RandomForestClassifier(), 'hyperparameters': random_forest_classifier_hyperparameters, 'folder': 'Models/Classification/Random_Forest_Classifier/'}, 
     {'model': ensemble.GradientBoostingClassifier(), 'hyperparameters': gradient_boosting_classifier_hyperparameters, 'folder': 'Models/Classification/Gradient_Boosting_Classifier/'}]
 
-    best_estimator, best_performance_metrics, best_hyperparameters = tune_classification_model_hyperparameters(ensemble.GradientBoostingClassifier(), gradient_boosting_classifier_hyperparameters)
-    print(best_estimator)
-    print(best_hyperparameters)
-    print(best_performance_metrics)
-    
+
+
+    model_comparisons = evaluate_all_models(model_dictionaries= model_dictionaries)
+    best_model, hyperparams, performance_metrics = find_best_model(model_comparisons)
+    print(best_model)
+    print(hyperparams)
+    print(performance_metrics)
     #save_model(model= best_estimator, metrics= best_performance_metrics, hyperparameters=best_hyperparameters, folder='Models/Classification/Logistic_Regression/')
 
     #model = sklearn.linear_model.LogisticRegression()
