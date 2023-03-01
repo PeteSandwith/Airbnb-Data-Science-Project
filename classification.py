@@ -2,6 +2,8 @@ import sklearn
 from sklearn import metrics
 import numpy as np
 from sklearn import linear_model
+from sklearn import tree
+from sklearn import ensemble
 from modelling import prepare_data
 from modelling import save_model
 
@@ -72,6 +74,8 @@ def tune_classification_model_hyperparameters(model, hyperparameters):
 
 if __name__ == "__main__":
 
+    X_train, X_validation, X_test, y_train, y_validation, y_test = prepare_data(data = 'cleaned_tabular_data.csv', feature_columns= ['guests', 'beds', 'bathrooms', 'Cleanliness_rating', 'Accuracy_rating', 'Communication_rating', 'Location_rating', 'Check-in_rating', 'Value_rating', 'amenities_count', 'bedrooms'], label_columns='Category')
+
     logistic_regression_hyperparameters = {
         'penalty': ['l2', None],
         'solver': ['lbfgs', 'newton-cg', 'newton-cholesky', 'sag'],
@@ -80,12 +84,50 @@ if __name__ == "__main__":
 
         }
 
-    X_train, X_validation, X_test, y_train, y_validation, y_test = prepare_data(data = 'cleaned_tabular_data.csv', feature_columns= ['guests', 'beds', 'bathrooms', 'Cleanliness_rating', 'Accuracy_rating', 'Communication_rating', 'Location_rating', 'Check-in_rating', 'Value_rating', 'amenities_count', 'bedrooms'], label_columns='Category')
+    decision_tree_classifier_hyperparameters = {
+        'criterion': ['gini', 'entropy', 'log_loss'],
+        'splitter': ['best', 'random'],
+        'min_samples_split': [1, 2, 3],
+        'min_samples_leaf': [0.5, 1, 1.5, 2],
+        'ccp_alpha': [0, 0.005, 0.01, 0.015],
+        'max_features': ['auto', 'sqrt', 'log2'],
+        'min_weight_fraction_leaf': [0.0, 0.01, 0.02],
+        'min_impurity_decrease': [0.0, 0.01, 0.02]
+    }
 
-    best_estimator, best_performance_metrics, best_hyperparameters = tune_classification_model_hyperparameters(linear_model.LogisticRegression(), logistic_regression_hyperparameters)
+    random_forest_classifier_hyperparameters = {
+        'n_estimators': [90, 100, 110],
+        'criterion': ['gini', 'entropy', 'log_loss'],
+        'min_samples_split': [2, 3, 4],
+        'min_weight_fraction_leaf': [0.0025, 0.05],
+        'max_features': ['sqrt', 'log', None],
+        'ccp_alpha': [0.0, 0.01]
+    }
+
+    gradient_boosting_classifier_hyperparameters = {
+        'loss': ['log_loss', 'exponential'],
+        'learning_rate': [0.05, 0.1, 0.15],
+        'n_estimators': [90, 100, 110],
+        'criterion': ['friedman_mse', 'squared_error'],
+        'min_samples_leaf': [1, 2],
+        'min_weight_fraction_leaf': [0.0, 0.1],
+        'ccp_alpha': [0.0]
+    }
+
+    model_dictionaries = [{'model': linear_model.LogisticRegression(), 'hyperparameters': logistic_regression_hyperparameters, 'folder': 'Models/Classification/Logistic_Regression/'}, 
+    {'model': tree.DecisionTreeClassifier(), 'hyperparameters': decision_tree_classifier_hyperparameters, 'folder': 'Models/Classification/Decision_Tree_Classifier/'}, 
+    {'model': ensemble.RandomForestClassifier(), 'hyperparameters': random_forest_classifier_hyperparameters, 'folder': 'Models/Classification/Random_Forest_Classifier/'}, 
+    {'model': ensemble.GradientBoostingClassifier(), 'hyperparameters': gradient_boosting_classifier_hyperparameters, 'folder': 'Models/Classification/Gradient_Boosting_Classifier/'}]
+
+    best_estimator, best_performance_metrics, best_hyperparameters = tune_classification_model_hyperparameters(ensemble.GradientBoostingClassifier(), gradient_boosting_classifier_hyperparameters)
+    print(best_estimator)
+    print(best_hyperparameters)
+    print(best_performance_metrics)
     
-    save_model(model= best_estimator, metrics= best_performance_metrics, hyperparameters=best_hyperparameters, folder='Models/Classification/Logistic_Regression/')
+    #save_model(model= best_estimator, metrics= best_performance_metrics, hyperparameters=best_hyperparameters, folder='Models/Classification/Logistic_Regression/')
 
     #model = sklearn.linear_model.LogisticRegression()
     #model.fit(X_train, y_train)
     #calculate_scores(X_train, X_test, y_train, y_test, model)
+
+    
