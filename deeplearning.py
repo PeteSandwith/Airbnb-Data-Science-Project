@@ -12,14 +12,12 @@ class AirbnbDataset(Dataset):
         feature_columns = ['guests', 'beds', 'bathrooms', 'Cleanliness_rating', 'Accuracy_rating', 'Communication_rating', 'Location_rating', 'Check-in_rating', 'Value_rating', 'amenities_count', 'bedrooms'],
         label_columns = 'Price_Night')
    
-    def __getitem__(self, index):
-        example = self.data.iloc[index]
-        return example
+    def __getitem__(self, idx):
+        return (self.X.iloc[idx], self.y.iloc[idx])
 
     def __len__(self):
-        return len(self.data)
+        return len(self.X)
 
 
 data = AirbnbDataset()
-#print(data[10])
-print(data)
+print(data[11])
