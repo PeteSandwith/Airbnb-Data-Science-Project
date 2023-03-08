@@ -2,7 +2,7 @@ import torch
 from torch.utils.data import Dataset
 import pandas as pd
 
-data = pd.read_csv('airbnb-property-listings/tabular_data/cleaned_tabular_data.csv')
+
 
 
 class AirbnbDataset(Dataset):
@@ -15,3 +15,8 @@ class AirbnbDataset(Dataset):
         features = example['guests', 'beds', 'bathrooms', 'Cleanliness_rating', 'Accuracy_rating', 'Communication_rating', 'Location_rating', 'Check-in_rating', 'Value_rating', 'amenities_count', 'bedrooms']
         label = example['Price_Night']
         return features, label
+
+    def __len__(self):
+        return len(self.data)
+
+
