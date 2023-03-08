@@ -13,7 +13,7 @@ class AirbnbDataset(Dataset):
         label_columns = 'Price_Night')
    
     def __getitem__(self, idx):
-        return (self.X.iloc[idx], self.y.iloc[idx])
+        return (torch.tensor(self.X.iloc[idx]), torch.tensor(self.y.iloc[idx]))
 
     def __len__(self):
         return len(self.X)
@@ -21,3 +21,4 @@ class AirbnbDataset(Dataset):
 
 data = AirbnbDataset()
 print(data[11])
+print(type(data))
