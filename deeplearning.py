@@ -55,11 +55,17 @@ class PyTorchModel(torch.nn.Module):
     def forward(self, X):
         return self.linear_layer(X)
 
+def train(model, dataloader, number_epochs=10):
+    for batch in dataloader:
+            features, label = batch
+            y_predict_train = model(features)
+            print("Predictions", y_predict_train)
 
 
 if __name__ == '__main__':
     model = PyTorchModel(number_inputs=11, number_outputs=1)
-    y_hat = model(data[0][0])
-    print("Weight:", model.linear_layer.weight)
-    print("Bias:", model.linear_layer.bias)
-    print("Predictions:", y_hat)
+    train(model=model, dataloader=train_loader)
+    #y_hat = model(data[0][0])
+    #print("Weight:", model.linear_layer.weight)
+    #print("Bias:", model.linear_layer.bias)
+    #print("Predictions:", y_hat)
