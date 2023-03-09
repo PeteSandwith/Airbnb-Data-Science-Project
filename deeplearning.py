@@ -1,3 +1,4 @@
+from cgi import test
 import torch
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
@@ -25,10 +26,18 @@ data = AirbnbDataset(file = 'cleaned_tabular_data.csv')
 #print(data[11])
 #print(type(data))
 
-train_set, test_set = random_split(data, [0.5, 0.5])
-test_set, validation_set = random_split(test_set, [0.5, 0.5])
-train_loader = DataLoader(dataset=train_set, batch_size=12, shuffle=True)
-test_loader = DataLoader(dataset=test_set, batch_size=12, shuffle=True)
-validation_loader = DataLoader(dataset=validation_set, batch_size=12, shuffle=True)
 
+#Function which takes in the dataset and creates train, test and validation dataloaders
+
+def create_dataloaders(dataset, batch_size):
+    # Splits dataset into train, test and validation sets
+    train_set, test_set = random_split(dataset, [0.5, 0.5])
+    test_set, validation_set = random_split(test_set, [0.5, 0.5])
+
+    # Creates and returns dataloaders for the train, test and validation sets
+    train_loader = DataLoader(dataset=train_set, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(dataset=test_set, batch_size=batch_size, shuffle=True)
+    validation_loader = DataLoader(dataset=validation_set, batch_size=batch_size, shuffle=True)
+
+    return train_loader, test_loader, validation_loader
 
