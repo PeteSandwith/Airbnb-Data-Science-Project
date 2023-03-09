@@ -42,18 +42,24 @@ def create_dataloaders(dataset, batch_size):
 
     return train_loader, test_loader, validation_loader
 
-#train_loader, test_loader, validation_loader = create_dataloaders(dataset= data, batch_size=12)
-
+train_loader, test_loader, validation_loader = create_dataloaders(dataset= data, batch_size=12)
 
 class PyTorchModel(torch.nn.Module):
 
     # Constructor 
-    def __init__(self, num_inputs, num_outputs):
+    def __init__(self, number_inputs, number_outputs):
         super().__init__()
-        self.linear_layer = torch.nn.Linear(num_inputs, num_outputs)
+        self.linear_layer = torch.nn.Linear(number_inputs, number_outputs)
     
     # Forward method that will be run whenever we call the model
     def forward(self, X):
         return self.linear_layer(X)
 
 
+
+if __name__ == '__main__':
+    model = PyTorchModel(number_inputs=11, number_outputs=1)
+    y_hat = model(data[0][0].float())
+    print("Weight:", model.linear_layer.weight)
+    print("Bias:", model.linear_layer.bias)
+    print("Predictions:", y_hat)
