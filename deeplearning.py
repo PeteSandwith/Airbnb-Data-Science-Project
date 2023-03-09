@@ -17,7 +17,7 @@ class AirbnbDataset(Dataset):
         label_columns = 'Price_Night')
    
     def __getitem__(self, idx):
-        return (torch.tensor(self.X.iloc[idx]), torch.tensor(self.y.iloc[idx]))
+        return (torch.tensor(self.X.iloc[idx]).float(), torch.tensor(self.y.iloc[idx]).float())
 
     def __len__(self):
         return len(self.X)
@@ -59,7 +59,7 @@ class PyTorchModel(torch.nn.Module):
 
 if __name__ == '__main__':
     model = PyTorchModel(number_inputs=11, number_outputs=1)
-    y_hat = model(data[0][0].float())
+    y_hat = model(data[0][0])
     print("Weight:", model.linear_layer.weight)
     print("Bias:", model.linear_layer.bias)
     print("Predictions:", y_hat)
