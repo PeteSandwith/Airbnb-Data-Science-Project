@@ -1,4 +1,5 @@
 from cgi import test
+from sklearn.model_selection import train_test_split
 import torch
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
@@ -40,4 +41,19 @@ def create_dataloaders(dataset, batch_size):
     validation_loader = DataLoader(dataset=validation_set, batch_size=batch_size, shuffle=True)
 
     return train_loader, test_loader, validation_loader
+
+#train_loader, test_loader, validation_loader = create_dataloaders(dataset= data, batch_size=12)
+
+
+class PyTorchModel(torch.nn.Module):
+
+    # Constructor 
+    def __init__(self, num_inputs, num_outputs):
+        super().__init__()
+        self.linear_layer = torch.nn.Linear(num_inputs, num_outputs)
+    
+    # Forward method that will be run whenever we call the model
+    def forward(self, X):
+        return self.linear_layer(X)
+
 
