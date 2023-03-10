@@ -7,6 +7,7 @@ from torch.utils.data import random_split
 import torch.nn.functional as Functional
 import pandas as pd
 from tabular_data import load_airbnb
+from torch.utils.tensorboard import SummaryWriter
 
 
 
@@ -44,7 +45,7 @@ def create_dataloaders(dataset, batch_size):
     return train_loader, test_loader, validation_loader
 
 train_loader, test_loader, validation_loader = create_dataloaders(dataset= data, batch_size=12)
-
+dataloader_dict = {'Train': train_loader, 'Test': test_loader, 'Validation': validation_loader}
 class PyTorchModel(torch.nn.Module):
 
     # Constructor 
@@ -62,10 +63,14 @@ class PyTorchModel(torch.nn.Module):
 def train(model, dataloader, number_epochs=10):
 
     # Defines the optimiser to be used, in this case stochastic gradient descent
-    optimiser = torch.optim.SGD(model.parameters(), lr= 0.00003)
+    optimiser = torch.optim.SGD(model.parameters(), lr= 0.005)
 
+    # Initialises SummaryWriter
+    writer = SummaryWriter()
+    # Variable to track the overall batch number
+    batch_index = 0
     for epoch in range(number_epochs):
-        for batch in dataloader:
+        for batch in dataloader['Train']:
                 features, labels = batch
                 predictions = model(features).squeeze()
                 mse_loss = Functional.mse_loss(predictions, labels)
@@ -75,11 +80,21 @@ def train(model, dataloader, number_epochs=10):
                 optimiser.step()
                 # Resets the grad attributes of the parameters, which are otherwise stored
                 optimiser.zero_grad()
-                print(mse_loss.item())
+                #print(mse_loss.item())
+                writer.add_scalar('mse_loss', mse_loss.item(), batch_index)
+
+                batch_index += 1
+
+
+        for batch in dataloader['Validation']:
+            features, labels = batch
+            predictions = model(features).squeeze()
+            mse_loss = Functional.mse_loss(predictions, labels)
+            print(mse_loss.item())
 
 if __name__ == '__main__':
     model = PyTorchModel(number_inputs=11, number_outputs=1)
-    train(model=model, dataloader=train_loader)
+    train(model=model, dataloader=dataloader_dict)
     
     #y_hat = model(data[0][0])
     #print("Weight:", model.linear_layer.weight)
