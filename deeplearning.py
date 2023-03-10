@@ -4,7 +4,7 @@ import torch
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 from torch.utils.data import random_split
-import torch.nn.functional as functional
+import torch.nn.functional as Functional
 import pandas as pd
 from tabular_data import load_airbnb
 
@@ -50,28 +50,32 @@ class PyTorchModel(torch.nn.Module):
     # Constructor 
     def __init__(self, number_inputs, number_outputs):
         super().__init__()
-        self.linear_layer = torch.nn.Linear(number_inputs, number_outputs)
+        self.linear_layer = torch.nn.Linear(number_inputs, 12)
+        self.linear_layer2 = torch.nn.Linear(12, number_outputs)
     
     # Forward method that will be run whenever we call the model
     def forward(self, X):
-        return self.linear_layer(X)
+        X = self.linear_layer(X)
+        X = Functional.relu(X)
+        return self.linear_layer2(X)
 
 def train(model, dataloader, number_epochs=10):
 
     # Defines the optimiser to be used, in this case stochastic gradient descent
-    optimiser = torch.optim.SGD(model.parameters(), lr= 0.00001)
+    optimiser = torch.optim.SGD(model.parameters(), lr= 0.00003)
 
-    for batch in dataloader:
-            features, labels = batch
-            predictions = model(features).squeeze()
-            mse_loss = functional.mse_loss(predictions, labels)
-            #Populates the grad attribute of the parameters 
-            mse_loss.backward()
-            #Optimisation step: optimises parameters based on their grad attribute 
-            optimiser.step()
-            # Resets the grad attributes of the parameters, which are otherwise stored
-            optimiser.zero_grad()
-            print(mse_loss.item())
+    for epoch in range(number_epochs):
+        for batch in dataloader:
+                features, labels = batch
+                predictions = model(features).squeeze()
+                mse_loss = Functional.mse_loss(predictions, labels)
+                #Populates the grad attribute of the parameters 
+                mse_loss.backward()
+                #Optimisation step: optimises parameters based on their grad attribute 
+                optimiser.step()
+                # Resets the grad attributes of the parameters, which are otherwise stored
+                optimiser.zero_grad()
+                print(mse_loss.item())
 
 if __name__ == '__main__':
     model = PyTorchModel(number_inputs=11, number_outputs=1)
