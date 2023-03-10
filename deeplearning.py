@@ -61,10 +61,13 @@ class PyTorchModel(torch.nn.Module):
         X = Functional.relu(X)
         return self.linear_layer2(X)
 
-def train(model, dataloader, number_epochs=10):
+config = {"Optimiser": torch.optim.SGD, "Learning_rate": 0.001, "Hidden_layer_width": None, "Depth": None}
+
+
+def train(model, dataloader, config, number_epochs=10):
 
     # Defines the optimiser to be used, in this case stochastic gradient descent
-    optimiser = torch.optim.SGD(model.parameters(), lr= 0.001)
+    optimiser = config['Optimiser'](model.parameters(), lr= config["Learning_rate"])
 
     # Initialises SummaryWriter
     writer = SummaryWriter()
@@ -98,7 +101,7 @@ def train(model, dataloader, number_epochs=10):
 
 if __name__ == '__main__':
     model = PyTorchModel(number_inputs=11, number_outputs=1)
-    train(model=model, dataloader=dataloader_dict)
+    train(model=model, dataloader=dataloader_dict, config=config)
     
     #y_hat = model(data[0][0])
     #print("Weight:", model.linear_layer.weight)
