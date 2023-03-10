@@ -4,6 +4,7 @@ import torch
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 from torch.utils.data import random_split
+import torch.nn.functional as functional
 import pandas as pd
 from tabular_data import load_airbnb
 
@@ -57,14 +58,17 @@ class PyTorchModel(torch.nn.Module):
 
 def train(model, dataloader, number_epochs=10):
     for batch in dataloader:
-            features, label = batch
-            y_predict_train = model(features)
-            print("Predictions", y_predict_train)
+            features, labels = batch
+            predictions = model(features).squeeze()
+            mse_loss = functional.mse_loss(predictions, labels)
+            mse_loss.backward()
+            print(mse_loss.item())
 
 
 if __name__ == '__main__':
     model = PyTorchModel(number_inputs=11, number_outputs=1)
     train(model=model, dataloader=train_loader)
+    
     #y_hat = model(data[0][0])
     #print("Weight:", model.linear_layer.weight)
     #print("Bias:", model.linear_layer.bias)
