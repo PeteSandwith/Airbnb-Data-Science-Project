@@ -42,17 +42,18 @@ def create_dataloaders(dataset, batch_size):
     test_loader = DataLoader(dataset=test_set, batch_size=batch_size, shuffle=True)
     validation_loader = DataLoader(dataset=validation_set, batch_size=batch_size, shuffle=True)
 
-    return train_loader, test_loader, validation_loader
+    dataloader_dict = {'Train': train_loader, 'Test': test_loader, 'Validation': validation_loader}
+    return dataloader_dict
 
-train_loader, test_loader, validation_loader = create_dataloaders(dataset= data, batch_size=12)
-dataloader_dict = {'Train': train_loader, 'Test': test_loader, 'Validation': validation_loader}
+dataloader_dict = create_dataloaders(dataset= data, batch_size=12)
+
 class PyTorchModel(torch.nn.Module):
 
     # Constructor 
     def __init__(self, number_inputs, number_outputs):
         super().__init__()
-        self.linear_layer = torch.nn.Linear(number_inputs, 12)
-        self.linear_layer2 = torch.nn.Linear(12, number_outputs)
+        self.linear_layer = torch.nn.Linear(number_inputs, 20)
+        self.linear_layer2 = torch.nn.Linear(20, number_outputs)
     
     # Forward method that will be run whenever we call the model
     def forward(self, X):
@@ -63,12 +64,13 @@ class PyTorchModel(torch.nn.Module):
 def train(model, dataloader, number_epochs=10):
 
     # Defines the optimiser to be used, in this case stochastic gradient descent
-    optimiser = torch.optim.SGD(model.parameters(), lr= 0.005)
+    optimiser = torch.optim.SGD(model.parameters(), lr= 0.001)
 
     # Initialises SummaryWriter
     writer = SummaryWriter()
     # Variable to track the overall batch number
-    batch_index = 0
+    batch_index_train = 0
+    batch_index_validation = 0
     for epoch in range(number_epochs):
         for batch in dataloader['Train']:
                 features, labels = batch
@@ -80,10 +82,10 @@ def train(model, dataloader, number_epochs=10):
                 optimiser.step()
                 # Resets the grad attributes of the parameters, which are otherwise stored
                 optimiser.zero_grad()
-                #print(mse_loss.item())
-                writer.add_scalar('mse_loss', mse_loss.item(), batch_index)
+                print(mse_loss.item())
+                writer.add_scalar('mse_loss_train', mse_loss.item(), batch_index_train)
 
-                batch_index += 1
+                batch_index_train += 1
 
 
         for batch in dataloader['Validation']:
@@ -91,6 +93,8 @@ def train(model, dataloader, number_epochs=10):
             predictions = model(features).squeeze()
             mse_loss = Functional.mse_loss(predictions, labels)
             print(mse_loss.item())
+            writer.add_scalar('mse_loss_validation', mse_loss.item(), batch_index_validation)
+            batch_index_validation += 1
 
 if __name__ == '__main__':
     model = PyTorchModel(number_inputs=11, number_outputs=1)
