@@ -50,18 +50,20 @@ dataloader_dict = create_dataloaders(dataset= data, batch_size=12)
 class PyTorchModel(torch.nn.Module):
 
     # Constructor 
-    def __init__(self, number_inputs, number_outputs):
+    def __init__(self, number_inputs, number_outputs, config):
         super().__init__()
-        self.linear_layer = torch.nn.Linear(number_inputs, 20)
-        self.linear_layer2 = torch.nn.Linear(20, number_outputs)
+        self.layers = torch.nn.Sequential(
+            torch.nn.Linear(number_inputs, config["Hidden_layer_width"]),
+            torch.nn.ReLU(),
+            torch.nn.Linear(config["Hidden_layer_width"], number_outputs)
+        )
+        
     
     # Forward method that will be run whenever we call the model
     def forward(self, X):
-        X = self.linear_layer(X)
-        X = Functional.relu(X)
-        return self.linear_layer2(X)
+       return self.layers(X)
 
-config = {"Optimiser": torch.optim.SGD, "Learning_rate": 0.001, "Hidden_layer_width": None, "Depth": None}
+config = {"Optimiser": torch.optim.SGD, "Learning_rate": 0.001, "Hidden_layer_width": 15, "Depth": None}
 
 
 def train(model, dataloader, config, number_epochs=10):
@@ -100,7 +102,7 @@ def train(model, dataloader, config, number_epochs=10):
             batch_index_validation += 1
 
 if __name__ == '__main__':
-    model = PyTorchModel(number_inputs=11, number_outputs=1)
+    model = PyTorchModel(number_inputs=11, number_outputs=1, config=config)
     train(model=model, dataloader=dataloader_dict, config=config)
     
     #y_hat = model(data[0][0])
