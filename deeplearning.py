@@ -57,13 +57,21 @@ class PyTorchModel(torch.nn.Module):
         return self.linear_layer(X)
 
 def train(model, dataloader, number_epochs=10):
+
+    # Defines the optimiser to be used, in this case stochastic gradient descent
+    optimiser = torch.optim.SGD(model.parameters(), lr= 0.00001)
+
     for batch in dataloader:
             features, labels = batch
             predictions = model(features).squeeze()
             mse_loss = functional.mse_loss(predictions, labels)
+            #Populates the grad attribute of the parameters 
             mse_loss.backward()
+            #Optimisation step: optimises parameters based on their grad attribute 
+            optimiser.step()
+            # Resets the grad attributes of the parameters, which are otherwise stored
+            optimiser.zero_grad()
             print(mse_loss.item())
-
 
 if __name__ == '__main__':
     model = PyTorchModel(number_inputs=11, number_outputs=1)
