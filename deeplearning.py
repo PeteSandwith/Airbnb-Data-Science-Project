@@ -52,18 +52,27 @@ class PyTorchModel(torch.nn.Module):
     # Constructor 
     def __init__(self, number_inputs, number_outputs, config):
         super().__init__()
-        self.layers = torch.nn.Sequential(
-            torch.nn.Linear(number_inputs, config["Hidden_layer_width"]),
-            torch.nn.ReLU(),
-            torch.nn.Linear(config["Hidden_layer_width"], number_outputs)
-        )
+        layers = []
+        input_layer = torch.nn.Linear(number_inputs, config["Hidden_layer_width"])
+        output_layer = torch.nn.Linear(config["Hidden_layer_width"], number_outputs)
+        layers.append(input_layer)
+        layers.append(torch.nn.ReLU())
+
+        #Creates the hidden layers
+        for layer in range(config['Hidden_layer_depth']):
+            layers.append(torch.nn.Linear(config["Hidden_layer_width"], config["Hidden_layer_width"]))
+            layers.append(torch.nn.ReLU())
+        
+        layers.append(output_layer)
+        self.layers = torch.nn.Sequential(*layers)
         
     
     # Forward method that will be run whenever we call the model
     def forward(self, X):
        return self.layers(X)
 
-config = {"Optimiser": torch.optim.SGD, "Learning_rate": 0.001, "Hidden_layer_width": 15, "Depth": None}
+    
+config = {"Optimiser": torch.optim.SGD, "Learning_rate": 0.0001, "Hidden_layer_width": 20, "Hidden_layer_depth": 2}
 
 
 def train(model, dataloader, config, number_epochs=10):
