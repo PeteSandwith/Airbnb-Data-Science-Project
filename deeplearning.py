@@ -7,6 +7,7 @@ from torch.utils.data import random_split
 import torch.nn.functional as Functional
 import pandas as pd
 from tabular_data import load_airbnb
+import yaml
 from torch.utils.tensorboard import SummaryWriter
 
 
@@ -71,7 +72,12 @@ class PyTorchModel(torch.nn.Module):
     def forward(self, X):
        return self.layers(X)
 
-    
+def get_config_dict(file):
+    with open(file, 'r') as f:
+        config = yaml.safe_load(f)
+        return config
+
+
 config = {"Optimiser": torch.optim.SGD, "Learning_rate": 0.0001, "Hidden_layer_width": 20, "Hidden_layer_depth": 2}
 
 
@@ -111,8 +117,9 @@ def train(model, dataloader, config, number_epochs=10):
             batch_index_validation += 1
 
 if __name__ == '__main__':
-    model = PyTorchModel(number_inputs=11, number_outputs=1, config=config)
-    train(model=model, dataloader=dataloader_dict, config=config)
+    pass
+    #model = PyTorchModel(number_inputs=11, number_outputs=1, config=config)
+    #train(model=model, dataloader=dataloader_dict, config=config)
     
     #y_hat = model(data[0][0])
     #print("Weight:", model.linear_layer.weight)
