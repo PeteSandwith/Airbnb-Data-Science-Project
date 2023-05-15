@@ -77,8 +77,17 @@ def get_config_dict(file):
         config = yaml.safe_load(f)
         return config
 
+#config = get_config_dict('configurations.yaml')
+#print(config)
+config = {"Optimiser": 'SGD', "Learning_rate": 0.0001, "Hidden_layer_width": 20, "Hidden_layer_depth": 2}
 
-config = {"Optimiser": torch.optim.SGD, "Learning_rate": 0.0001, "Hidden_layer_width": 20, "Hidden_layer_depth": 2}
+
+def convert_optimiser_to_callable(string):
+    '''Function that converts the description of the optimiser from the configuration dictionary, which is a string, to a callable object that can be used by pytorch'''
+
+    if string == 'SGD':
+        optimiser = torch.optim.SGD
+    return optimiser
 
 
 def train(model, dataloader, config, number_epochs=10):
@@ -118,8 +127,9 @@ def train(model, dataloader, config, number_epochs=10):
 
 if __name__ == '__main__':
     pass
-    #model = PyTorchModel(number_inputs=11, number_outputs=1, config=config)
-    #train(model=model, dataloader=dataloader_dict, config=config)
+
+    model = PyTorchModel(number_inputs=11, number_outputs=1, config=config)
+    train(model=model, dataloader=dataloader_dict, config=config)
     
     #y_hat = model(data[0][0])
     #print("Weight:", model.linear_layer.weight)
