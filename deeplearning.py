@@ -27,8 +27,7 @@ class AirbnbDataset(Dataset):
 
 
 data = AirbnbDataset(file = 'cleaned_tabular_data.csv')
-#print(data[11])
-#print(type(data))
+
 
 
 #Function which takes in the dataset and creates train, test and validation dataloaders
@@ -77,9 +76,8 @@ def get_config_dict(file):
         config = yaml.safe_load(f)
         return config
 
-#config = get_config_dict('configurations.yaml')
-#print(config)
-config = {"Optimiser": 'SGD', "Learning_rate": 0.0001, "Hidden_layer_width": 20, "Hidden_layer_depth": 2}
+config = get_config_dict('configurations.yaml')
+print(config)
 
 
 def convert_optimiser_to_callable(string):
@@ -93,7 +91,8 @@ def convert_optimiser_to_callable(string):
 def train(model, dataloader, config, number_epochs=10):
 
     # Defines the optimiser to be used, in this case stochastic gradient descent
-    optimiser = config['Optimiser'](model.parameters(), lr= config["Learning_rate"])
+    optimiser = convert_optimiser_to_callable(config['Optimiser'])(model.parameters(), lr= config["Learning_rate"])
+    
 
     # Initialises SummaryWriter
     writer = SummaryWriter()
@@ -124,6 +123,23 @@ def train(model, dataloader, config, number_epochs=10):
             print(mse_loss.item())
             writer.add_scalar('mse_loss_validation', mse_loss.item(), batch_index_validation)
             batch_index_validation += 1
+
+def save_model(folder, model, metrics, hyperparameters):
+    current_directory = os.getcwd()
+    model_filename = folder + 'model.joblib'
+    hyperparameters_filename = folder + 'hyperparameters.json'
+    performance_metrics_filename = folder + 'metrics.json'
+
+    # Saves the model 
+    joblib.dump(model, os.path.join(current_directory, model_filename))
+
+    # Saves the hyperparameters
+    with open(os.path.join(current_directory, hyperparameters_filename), "w") as file:
+        json.dump(hyperparameters, file) 
+
+    # Saves the metrics
+    with open(os.path.join(current_directory, performance_metrics_filename), "w") as file:
+        json.dump(metrics, file) 
 
 if __name__ == '__main__':
     pass
