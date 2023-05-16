@@ -9,7 +9,9 @@ import pandas as pd
 from tabular_data import load_airbnb
 import yaml
 from torch.utils.tensorboard import SummaryWriter
-
+import os
+import joblib
+import json
 
 
 class AirbnbDataset(Dataset):
@@ -93,7 +95,8 @@ def train(model, dataloader, config, number_epochs=10):
     # Defines the optimiser to be used, in this case stochastic gradient descent
     optimiser = convert_optimiser_to_callable(config['Optimiser'])(model.parameters(), lr= config["Learning_rate"])
     
-
+    train_mse_loss = []
+    validation_mse_loss = []
     # Initialises SummaryWriter
     writer = SummaryWriter()
     # Variable to track the overall batch number
@@ -112,7 +115,7 @@ def train(model, dataloader, config, number_epochs=10):
                 optimiser.zero_grad()
                 print(mse_loss.item())
                 writer.add_scalar('mse_loss_train', mse_loss.item(), batch_index_train)
-
+                train_mse_loss.append(mse_loss.item())
                 batch_index_train += 1
 
 
@@ -123,20 +126,28 @@ def train(model, dataloader, config, number_epochs=10):
             print(mse_loss.item())
             writer.add_scalar('mse_loss_validation', mse_loss.item(), batch_index_validation)
             batch_index_validation += 1
+            validation_mse_loss.append(mse_loss.item())
+    
+    mse_train = sum(train_mse_loss) / len(train_mse_loss)
+    mse_validation = sum(validation_mse_loss) / len(validation_mse_loss)
+    performance_metrics = {"MSE Training": mse_train, "MSE Validation": mse_validation}
+    return performance_metrics
 
-def save_model(folder, model):
+def save_model(folder, model, config, metrics):
     if type(model) == PyTorchModel:
         current_directory = os.getcwd()
         model_filename = folder + 'model.joblib'
         hyperparameters_filename = folder + 'hyperparameters.json'
         performance_metrics_filename = folder + 'metrics.json'
 
+        
+
         # Saves the model 
         joblib.dump(model, os.path.join(current_directory, model_filename))
 
         # Saves the hyperparameters
         with open(os.path.join(current_directory, hyperparameters_filename), "w") as file:
-            json.dump(hyperparameters, file) 
+            json.dump(config, file) 
 
         # Saves the metrics
         with open(os.path.join(current_directory, performance_metrics_filename), "w") as file:
@@ -148,8 +159,8 @@ if __name__ == '__main__':
     pass
 
     model = PyTorchModel(number_inputs=11, number_outputs=1, config=config)
-    train(model=model, dataloader=dataloader_dict, config=config)
-    
+    metrics = train(model=model, dataloader=dataloader_dict, config=config)
+    save_model("neural_networks/regression/", model, config, metrics)
     #y_hat = model(data[0][0])
     #print("Weight:", model.linear_layer.weight)
     #print("Bias:", model.linear_layer.bias)
