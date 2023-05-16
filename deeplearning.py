@@ -124,23 +124,26 @@ def train(model, dataloader, config, number_epochs=10):
             writer.add_scalar('mse_loss_validation', mse_loss.item(), batch_index_validation)
             batch_index_validation += 1
 
-def save_model(folder, model, metrics, hyperparameters):
-    current_directory = os.getcwd()
-    model_filename = folder + 'model.joblib'
-    hyperparameters_filename = folder + 'hyperparameters.json'
-    performance_metrics_filename = folder + 'metrics.json'
+def save_model(folder, model):
+    if type(model) == PyTorchModel:
+        current_directory = os.getcwd()
+        model_filename = folder + 'model.joblib'
+        hyperparameters_filename = folder + 'hyperparameters.json'
+        performance_metrics_filename = folder + 'metrics.json'
 
-    # Saves the model 
-    joblib.dump(model, os.path.join(current_directory, model_filename))
+        # Saves the model 
+        joblib.dump(model, os.path.join(current_directory, model_filename))
 
-    # Saves the hyperparameters
-    with open(os.path.join(current_directory, hyperparameters_filename), "w") as file:
-        json.dump(hyperparameters, file) 
+        # Saves the hyperparameters
+        with open(os.path.join(current_directory, hyperparameters_filename), "w") as file:
+            json.dump(hyperparameters, file) 
 
-    # Saves the metrics
-    with open(os.path.join(current_directory, performance_metrics_filename), "w") as file:
-        json.dump(metrics, file) 
+        # Saves the metrics
+        with open(os.path.join(current_directory, performance_metrics_filename), "w") as file:
+            json.dump(metrics, file) 
 
+    else:
+        return "This object is not a PyTorch model"
 if __name__ == '__main__':
     pass
 
