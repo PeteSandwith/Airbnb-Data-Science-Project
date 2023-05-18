@@ -161,14 +161,25 @@ def save_model(folder, model, config, metrics):
 
     else:
         return "This object is not a PyTorch model"
+
+def generate_nn_configs():
+    configs = []
+    optimisers = ['SGD', 'Adagrad', 'Adam']
+    learning_rates = [0.0005, 0.001, 0.0015]
+    widths = [5, 7, 9]
+    depths = [5, 7, 9]
+    for optimiser in optimisers:
+        for rate in learning_rates:
+            for width in widths:
+                for depth in depths:
+                    configs.append({'Optimiser': optimiser, 'Learning_rate': rate, 'Hidden_layer_width': width, 'Hidden_layer_depth': depth})
+    print(configs)
+
 if __name__ == '__main__':
     pass
-
-    model = PyTorchModel(number_inputs=11, number_outputs=1, config=config)
-    metrics = train(model=model, dataloader=dataloader_dict, config=config)
-    save_model("neural_networks/regression/", model, config, metrics)
+    generate_nn_configs()
+    #model = PyTorchModel(number_inputs=11, number_outputs=1, config=config)
+    #metrics = train(model=model, dataloader=dataloader_dict, config=config)
+    #save_model("neural_networks/regression/", model, config, metrics)
     
-    #y_hat = model(data[0][0])
-    #print("Weight:", model.linear_layer.weight)
-    #print("Bias:", model.linear_layer.bias)
-    #print("Predictions:", y_hat)
+  
