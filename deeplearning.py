@@ -87,7 +87,12 @@ def convert_optimiser_to_callable(string):
 
     if string == 'SGD':
         optimiser = torch.optim.SGD
+    elif string == 'Adagrad':
+        optimiser = torch.optim.Adagrad
+    elif string == 'Adam':
+        optimiser = torch.optim.Adam
     return optimiser
+
 
 
 def train(model, dataloader, config, number_epochs=10):
