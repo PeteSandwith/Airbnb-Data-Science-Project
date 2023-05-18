@@ -73,13 +73,13 @@ class PyTorchModel(torch.nn.Module):
     def forward(self, X):
        return self.layers(X)
 
+
 def get_config_dict(file):
     with open(file, 'r') as f:
         config = yaml.safe_load(f)
         return config
 
-config = get_config_dict('configurations.yaml')
-print(config)
+
 
 
 def convert_optimiser_to_callable(string):
@@ -178,11 +178,30 @@ def generate_nn_configs():
             for width in widths:
                 for depth in depths:
                     configs.append({'Optimiser': optimiser, 'Learning_rate': rate, 'Hidden_layer_width': width, 'Hidden_layer_depth': depth})
-    print(configs)
+    return configs
+
+
+def find_best_nn():
+    configuration_list = generate_nn_configs()
+    best_mse = 10000000
+    best_configs = {}
+    best_model = 'Empty'
+    for config in configuration_list:
+        model = PyTorchModel(number_inputs=11, number_outputs=1, config=config)
+        metrics = train(model=model, dataloader=dataloader_dict, config=config)
+        if metrics["MSE Validation"] <= best_mse:
+            best_mse = metrics["MSE Validation"]
+            best_configs = config
+            best_model = model
+        
+    return best_mse, best_configs, best_model
 
 if __name__ == '__main__':
     pass
-    generate_nn_configs()
+    best_mse, best_configs, best_model = find_best_nn()
+    print(best_mse)
+    print(best_configs)
+    print(best_model)
     #model = PyTorchModel(number_inputs=11, number_outputs=1, config=config)
     #metrics = train(model=model, dataloader=dataloader_dict, config=config)
     #save_model("neural_networks/regression/", model, config, metrics)
