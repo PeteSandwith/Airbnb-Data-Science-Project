@@ -12,7 +12,7 @@ from torch.utils.tensorboard import SummaryWriter
 import os
 import joblib
 import json
-
+import datetime
 
 class AirbnbDataset(Dataset):
     def __init__(self, file):
@@ -135,10 +135,16 @@ def train(model, dataloader, config, number_epochs=10):
 
 def save_model(folder, model, config, metrics):
     if type(model) == PyTorchModel:
+        date = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
         current_directory = os.getcwd()
-        model_filename = folder + 'model.joblib'
-        hyperparameters_filename = folder + 'hyperparameters.json'
-        performance_metrics_filename = folder + 'metrics.json'
+        folder = folder + date 
+        if os.path.exists(folder) == False:
+            os.mkdir(folder)
+        
+        
+        model_filename = folder + '/model.joblib'
+        hyperparameters_filename = folder + '/hyperparameters.json'
+        performance_metrics_filename = folder + '/metrics.json'
 
         
 
@@ -161,6 +167,7 @@ if __name__ == '__main__':
     model = PyTorchModel(number_inputs=11, number_outputs=1, config=config)
     metrics = train(model=model, dataloader=dataloader_dict, config=config)
     save_model("neural_networks/regression/", model, config, metrics)
+    
     #y_hat = model(data[0][0])
     #print("Weight:", model.linear_layer.weight)
     #print("Bias:", model.linear_layer.bias)
