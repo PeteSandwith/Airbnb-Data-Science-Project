@@ -67,7 +67,19 @@ def __calculate_R2__(self, y_predictions_train, y_predictions_test, y_prediction
         print('The R2 score for the test set is: ' + str(R2_test))
         print('The R2 score for the validation set is: ' + str(R2_validation))
 ```
-- A function was created to save the trained model, its hyperparameters and its performance metrics. Whilst the hyperparameters and metrics were simply saved in json files, the model itself was saved using the python library joblib. Joblib can be used to easily save and load machine learning models. 
+- A grid search was performed over a suitable range of hyperparameter values, in order to tune the hyperparameters of the model. This was done both using a custom gridsearch function which was implemented from scratch, and then by using the inbuilt sklearn GridSearchCV function. 
+```
+def tune_regression_model_hyperparameters(model, hyperparameters):
+    grid = sklearn.model_selection.GridSearchCV(estimator= model, param_grid= hyperparameters, scoring= 'r2', refit= 'r2', verbose= 10)
+    grid.fit(X_train, y_train)
+    
+    best_estimator = grid.best_estimator_
+    best_performance_metrics = {'r2': calculate_validation_r2(model = best_estimator), 'rmse': calculate_validation_rmse(model= best_estimator)}
+    best_hyperparameters = best_estimator.get_params()
+
+    return best_estimator, best_performance_metrics, best_hyperparameters
+```
+- A function was created to save the trained model, its tuned hyperparameters and its performance metrics. Whilst the hyperparameters and metrics were simply saved in json files, the model itself was saved using the python library joblib. Joblib can be used to easily save and load machine learning models. 
 
 ```
 def save_model(folder, model, metrics, hyperparameters):
@@ -87,3 +99,46 @@ def save_model(folder, model, metrics, hyperparameters):
     with open(os.path.join(current_directory, performance_metrics_filename), "w") as file:
         json.dump(metrics, file) 
 ```
+- Several other models provided by sklearn were implemented in addition to the SGD regressor: decision trees, random forests, and gradient boosting. All of these models were tuned to find optimum hyperparameters. The following function takes in a dictionary containing each different model type along with the range of hyperparameters to be searched over. It returns a dictionary containing, for each model, the name of the model, the best hyperparameters and the performance metrics.
+```
+def evaluate_all_models(model_dictionaries):
+    model_comparisons = []
+    for item in model_dictionaries:
+        best_estimator, best_performance_metrics, best_hyperparameters = tune_regression_model_hyperparameters(model = item['model'], hyperparameters = item['hyperparameters'])
+        model_comparisons.append({'estimator': best_estimator, 'metrics': best_performance_metrics, 'hyperparameters': best_hyperparameters})
+        save_model(folder = item['folder'], model = best_estimator, metrics = best_performance_metrics, hyperparameters= best_hyperparameters)
+    return model_comparisons
+```
+## Milestone 4
+- This process was repeated, this time for a classification problem. The same 'prepare_data' function was imported and used to load in the airbnb dataset, using the 'category' as the label. Several sklearn classification models were trained and tuned: logistic regression, decision tree classifier, random forest classifier, gradient boosting classifier. Many of the functions used in the regression problem could be repurposed to analyse the classifier models, for instance the function used to determine the best model:
+```
+def find_best_model(dictionary):
+    best_model = None
+    hyperparams = None 
+    performance_metrics = None
+    accuracy = 0
+    for model in dictionary: 
+        if model['metrics']['accuracy_validation'] > accuracy:
+            accuracy = model['metrics']['accuracy_validation']
+            performance_metrics = model['metrics']
+            hyperparams = model['hyperparameters']
+            best_model = model['estimator']
+    return best_model, hyperparams, performance_metrics
+```
+## Milestone 5
+- A configurable neural network was created to solve the regression problem. A dataloader was created to shuffle and batch the data to be fed into the neural network:
+```
+def create_dataloaders(dataset, batch_size):
+    # Splits dataset into train, test and validation sets
+    train_set, test_set = random_split(dataset, [0.5, 0.5])
+    test_set, validation_set = random_split(test_set, [0.5, 0.5])
+
+    # Creates and returns dataloaders for the train, test and validation sets
+    train_loader = DataLoader(dataset=train_set, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(dataset=test_set, batch_size=batch_size, shuffle=True)
+    validation_loader = DataLoader(dataset=validation_set, batch_size=batch_size, shuffle=True)
+
+    dataloader_dict = {'Train': train_loader, 'Test': test_loader, 'Validation': validation_loader}
+    return dataloader_dict
+```
+-
