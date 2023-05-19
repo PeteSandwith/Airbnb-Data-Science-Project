@@ -67,4 +67,23 @@ def __calculate_R2__(self, y_predictions_train, y_predictions_test, y_prediction
         print('The R2 score for the test set is: ' + str(R2_test))
         print('The R2 score for the validation set is: ' + str(R2_validation))
 ```
+- A function was created to save the trained model, its hyperparameters and its performance metrics. Whilst the hyperparameters and metrics were simply saved in json files, the model itself was saved using the python library joblib. Joblib can be used to easily save and load machine learning models. 
 
+```
+def save_model(folder, model, metrics, hyperparameters):
+    current_directory = os.getcwd()
+    model_filename = folder + 'model.joblib'
+    hyperparameters_filename = folder + 'hyperparameters.json'
+    performance_metrics_filename = folder + 'metrics.json'
+
+    # Saves the model 
+    joblib.dump(model, os.path.join(current_directory, model_filename))
+
+    # Saves the hyperparameters
+    with open(os.path.join(current_directory, hyperparameters_filename), "w") as file:
+        json.dump(hyperparameters, file) 
+
+    # Saves the metrics
+    with open(os.path.join(current_directory, performance_metrics_filename), "w") as file:
+        json.dump(metrics, file) 
+```
