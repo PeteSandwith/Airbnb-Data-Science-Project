@@ -141,4 +141,80 @@ def create_dataloaders(dataset, batch_size):
     dataloader_dict = {'Train': train_loader, 'Test': test_loader, 'Validation': validation_loader}
     return dataloader_dict
 ```
--
+- A function 'train' was created which takes in the model, the dataloader and the number of epochs. This function performs forward passes on the batches of data and outputs a prediction. It iteratively optimises the parameters of the model, whilst calculating the mse for each batch. Later on, the function was adapted to take in a dictionary 'config' which specifies the hyperparameters of the model. It also uses the SummaryWriter object to visualise the mse metric using tensorflow.
+```
+def train(model, dataloader, config, number_epochs=10):
+
+    # Defines the optimiser to be used, in this case stochastic gradient descent
+    optimiser = convert_optimiser_to_callable(config['Optimiser'])(model.parameters(), lr= config["Learning_rate"])
+    
+    train_mse_loss = []
+    validation_mse_loss = []
+    # Initialises SummaryWriter
+    writer = SummaryWriter()
+    # Variable to track the overall batch number
+    batch_index_train = 0
+    batch_index_validation = 0
+    for epoch in range(number_epochs):
+        for batch in dataloader['Train']:
+                features, labels = batch
+                predictions = model(features).squeeze()
+                mse_loss = Functional.mse_loss(predictions, labels)
+                #Populates the grad attribute of the parameters 
+                mse_loss.backward()
+                #Optimisation step: optimises parameters based on their grad attribute 
+                optimiser.step()
+                # Resets the grad attributes of the parameters, which are otherwise stored
+                optimiser.zero_grad()
+                print(mse_loss.item())
+                writer.add_scalar('mse_loss_train', mse_loss.item(), batch_index_train)
+                train_mse_loss.append(mse_loss.item())
+                batch_index_train += 1
+```
+- In order to tune the hyperparameters of the model, such as the type of optimiser used and the width / depth of the hidden layers in the neural network, a function called find_best_nn was defined. It uses the generate_nn_configs function to generate a list of dictionaries, each one of which contains a particular set of hyperparameters in the grid search. Find_best_nn() then trains a neural network using each different set of hyperparameters and compares the performance metrics to determine the best model.
+```
+def find_best_nn():
+    configuration_list = generate_nn_configs()
+    best_mse = 10000000
+    best_configs = {}
+    best_model = 'Empty'
+    best_metrics = {}
+    for config in configuration_list:
+        model = PyTorchModel(number_inputs=11, number_outputs=1, config=config)
+        metrics = train(model=model, dataloader=dataloader_dict, config=config)
+        if metrics["MSE Validation"] <= best_mse:
+            best_mse = metrics["MSE Validation"]
+            best_metrics = metrics
+            best_configs = config
+            best_model = model
+        
+    return best_model, best_configs, best_metrics
+```
+- The best model, along with its hyperparameters and metrics, can be saved using the function below. The function uses a combination of the os and the datetime python libraries to create unique directories within which to save a copy of the model, and json files containing its hyperparameters and performance metrics. The function also checks to ensure that the object being saved is indeed a PyTorch model.
+```
+def save_model(folder, model, config, metrics):
+    if type(model) == PyTorchModel:
+        date = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
+        current_directory = os.getcwd()
+        folder = folder + date 
+        if os.path.exists(folder) == False:
+            os.mkdir(folder)
+        
+        model_filename = folder + '/model.joblib'
+        hyperparameters_filename = folder + '/hyperparameters.json'
+        performance_metrics_filename = folder + '/metrics.json'
+
+        # Saves the model 
+        joblib.dump(model, os.path.join(current_directory, model_filename))
+
+        # Saves the hyperparameters
+        with open(os.path.join(current_directory, hyperparameters_filename), "w") as file:
+            json.dump(config, file) 
+
+        # Saves the metrics
+        with open(os.path.join(current_directory, performance_metrics_filename), "w") as file:
+            json.dump(metrics, file) 
+
+    else:
+        return "This object is not a PyTorch model"
+```
