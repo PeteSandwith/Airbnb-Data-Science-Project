@@ -28,9 +28,6 @@ class AirbnbDataset(Dataset):
         return len(self.X)
 
 
-data = AirbnbDataset(file = 'cleaned_tabular_data.csv')
-
-
 
 #Function which takes in the dataset and creates train, test and validation dataloaders
 
@@ -47,7 +44,7 @@ def create_dataloaders(dataset, batch_size):
     dataloader_dict = {'Train': train_loader, 'Test': test_loader, 'Validation': validation_loader}
     return dataloader_dict
 
-dataloader_dict = create_dataloaders(dataset= data, batch_size=12)
+
 
 class PyTorchModel(torch.nn.Module):
 
@@ -78,7 +75,6 @@ def get_config_dict(file):
     with open(file, 'r') as f:
         config = yaml.safe_load(f)
         return config
-
 
 
 
@@ -186,24 +182,27 @@ def find_best_nn():
     best_mse = 10000000
     best_configs = {}
     best_model = 'Empty'
+    best_metrics = {}
     for config in configuration_list:
         model = PyTorchModel(number_inputs=11, number_outputs=1, config=config)
         metrics = train(model=model, dataloader=dataloader_dict, config=config)
         if metrics["MSE Validation"] <= best_mse:
             best_mse = metrics["MSE Validation"]
+            best_metrics = metrics
             best_configs = config
             best_model = model
         
-    return best_mse, best_configs, best_model
+    return best_model, best_configs, best_metrics
 
 if __name__ == '__main__':
     pass
-    best_mse, best_configs, best_model = find_best_nn()
-    print(best_mse)
+    data = AirbnbDataset(file = 'cleaned_tabular_data.csv')
+    dataloader_dict = create_dataloaders(dataset= data, batch_size=12)
+    best_model, best_configs, best_metrics = find_best_nn()
+    print(best_model)
     print(best_configs)
     print(best_model)
-    #model = PyTorchModel(number_inputs=11, number_outputs=1, config=config)
-    #metrics = train(model=model, dataloader=dataloader_dict, config=config)
-    #save_model("neural_networks/regression/", model, config, metrics)
+    save_model('neural_networks/regression/', best_model, best_configs, best_metrics)
+    
     
   
